@@ -21,6 +21,7 @@ android {
 
     buildTypes {
         debug {
+            //创建日志拦截器所需
             buildConfigField("boolean", "DEBUG", "true")
         }
         release {
@@ -29,6 +30,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            //创建日志拦截器所需
             buildConfigField("boolean", "DEBUG", "false")
         }
     }
