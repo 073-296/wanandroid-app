@@ -3,11 +3,8 @@ package com.study.wanandroid.network
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.study.wanandroid.network.ArticlePagingSource
 import com.study.wanandroid.entity.ArticleDetail
-import com.study.wanandroid.network.ApiService
-import com.study.wanandroid.network.RetrofitClient
-import com.study.wanandroid.entity.ArticleResponse
+import com.study.wanandroid.entity.BannerResponse
 import kotlinx.coroutines.flow.Flow
 
 class ApiRepository(
@@ -41,6 +38,17 @@ class ApiRepository(
     }
 
     //获取轮播图
-
+    suspend fun getBanner(): Result<BannerResponse>{
+        return try {
+            val response=api.getBanner()
+            if(response.errorCode==0){
+                Result.success(response)
+            }else{
+                Result.failure(Exception(response.errorMsg))
+            }
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
 
 }
