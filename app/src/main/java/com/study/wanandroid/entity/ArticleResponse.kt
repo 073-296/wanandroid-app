@@ -37,7 +37,8 @@ data class ArticleDetail(
     val collect: Boolean = false,
     val id: Int = 0,
     val link: String = "",
-    val title: String = ""
+    val title: String = "",
+    val shareUser:String=""
 )
 
 
