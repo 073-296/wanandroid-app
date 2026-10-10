@@ -53,6 +53,8 @@ fun ArticleItem(modifier: Modifier = Modifier, articleDetail: ArticleDetail = Ar
                         articleDetail.author
                     ) else stringResource(R.string.share_user, articleDetail.shareUser),
                     fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
             Spacer(
