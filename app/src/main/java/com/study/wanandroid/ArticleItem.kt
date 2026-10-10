@@ -48,9 +48,10 @@ fun ArticleItem(modifier: Modifier = Modifier, articleDetail: ArticleDetail = Ar
                     maxLines = 1
                 )
                 Text(
-                    text = if (articleDetail.author != "") articleDetail.author else stringResource(
-                        R.string.anonymous
-                    ),
+                    text = if (articleDetail.author != "") stringResource(
+                        R.string.author,
+                        articleDetail.author
+                    ) else stringResource(R.string.share_user, articleDetail.shareUser),
                     fontSize = MaterialTheme.typography.labelLarge.fontSize,
                 )
             }

@@ -8,4 +8,6 @@
     <string name="sp_record">spRecord</string>
     <string name="token">Token</string>
     <string name="anonymous">佚名</string>
+    <string name="author">作者:%s</string>
+    <string name="share_user">分享者:%s</string>
 </resources>
