@@ -13,6 +13,7 @@ import com.study.wanandroid.MainViewModel
 import com.study.wanandroid.screen.HomeScreen
 import com.study.wanandroid.screen.LoginScreen
 import com.study.wanandroid.R
+import com.study.wanandroid.screen.SearchScreen
 
 
 enum class WanAndroidRoute(@StringRes val title: Int) {
@@ -64,7 +65,7 @@ fun MainNav(
 
         //搜索
         composable(route = WanAndroidRoute.Search.name) {
-
+            SearchScreen()
         }
     }
 }
