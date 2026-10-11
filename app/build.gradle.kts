@@ -91,4 +91,7 @@ dependencies {
 
     //内嵌浏览器
     implementation("androidx.browser:browser:1.5.0")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }
