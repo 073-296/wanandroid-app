@@ -32,6 +32,10 @@ class MainViewModel(
 //        }
 //    }
 
+    init {
+        getBanner()
+    }
+
     //首页文章列表
     val articles: Flow<PagingData<ArticleDetail>> = repository
         .getArticles()

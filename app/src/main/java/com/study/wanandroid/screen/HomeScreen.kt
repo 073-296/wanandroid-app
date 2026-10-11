@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +25,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.study.wanandroid.ArticleItem
+import com.study.wanandroid.Banner
 import com.study.wanandroid.ContentBottomBar
 import com.study.wanandroid.MainViewModel
 import com.study.wanandroid.R
@@ -33,7 +35,7 @@ import com.study.wanandroid.entity.ArticleDetail
 fun HomeScreen(
     viewModel: MainViewModel,
     articleOnClick: (route: String) -> Unit,
-    searchOnClick:()-> Unit
+    searchOnClick: () -> Unit
 ) {
 
     Scaffold(
@@ -74,7 +76,8 @@ private fun HomeScreenBottomBar(onClick: (String) -> Unit) {
 
 @Composable
 private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
-    val lazyPagingItems: LazyPagingItems<ArticleDetail> = viewModel.articles.collectAsLazyPagingItems()
+    val lazyPagingItems: LazyPagingItems<ArticleDetail> =
+        viewModel.articles.collectAsLazyPagingItems()
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -83,7 +86,13 @@ private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
 
         //轮播图
         item {
-
+            Box(
+                modifier = Modifier
+                    .height(180.dp)
+                    .fillMaxWidth()
+            ) {
+                Banner(viewModel)
+            }
         }
 
         //文章列表
@@ -134,8 +143,8 @@ private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
     }
 
     //首次加载/刷新状态
-    when(lazyPagingItems.loadState.refresh){
-        is LoadState.Loading->{
+    when (lazyPagingItems.loadState.refresh) {
+        is LoadState.Loading -> {
             Box(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -144,7 +153,8 @@ private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
                 CircularProgressIndicator()
             }
         }
-        is LoadState.Error->{
+
+        is LoadState.Error -> {
             Box(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -152,18 +162,14 @@ private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
             ) {
                 Text(
                     text = "加载失败，点击重试",
-                    modifier = Modifier.clickable(onClick = {lazyPagingItems.retry()})
+                    modifier = Modifier.clickable(onClick = { lazyPagingItems.retry() })
                 )
             }
         }
+
         else -> Unit
     }
 }
 
 
 
-//轮播图
-@Composable
-private fun Banner() {
-
-}
