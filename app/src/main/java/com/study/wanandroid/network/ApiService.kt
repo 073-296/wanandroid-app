@@ -27,4 +27,12 @@ interface ApiService {
     //轮播图
     @GET("banner/json")
     suspend fun getBanner(): BannerResponse
+
+    //搜索
+    @FormUrlEncoded
+    @POST("article/query/{page}/json")
+    suspend fun searchArticles(
+        @Path("page") page:Int,
+        @Field("k") keyWord:String
+    ): ArticleResponse
 }

@@ -65,7 +65,12 @@ fun MainNav(
 
         //搜索
         composable(route = WanAndroidRoute.Search.name) {
-            SearchScreen()
+            SearchScreen(
+                viewModel = viewModel,
+                backToHomeScreen = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

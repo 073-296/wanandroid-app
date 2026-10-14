@@ -24,7 +24,7 @@ class ApiRepository(
 //        }
 //    }
     //获取首页文章列表
-    fun getArticles(): Flow<PagingData<ArticleDetail>>{
+    fun getArticles(): Flow<PagingData<ArticleDetail>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,//每页加载的数量
@@ -33,20 +33,32 @@ class ApiRepository(
                 initialLoadSize = 20//首次加载的数量
             ),
             //pagingSourceFactory每次都要返回新实例，不能复用
-            pagingSourceFactory = { ArticlePagingSource(api)}
+            pagingSourceFactory = { ArticlePagingSource(api) }
+        ).flow
+    }
+
+    //搜索文章
+    fun searchArticles(keyword: String): Flow<PagingData<ArticleDetail>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                prefetchDistance = 3,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { ArticlePagingSource(api, keyword) }
         ).flow
     }
 
     //获取轮播图
-    suspend fun getBanner(): Result<BannerResponse>{
+    suspend fun getBanner(): Result<BannerResponse> {
         return try {
-            val response=api.getBanner()
-            if(response.errorCode==0){
+            val response = api.getBanner()
+            if (response.errorCode == 0) {
                 Result.success(response)
-            }else{
+            } else {
                 Result.failure(Exception(response.errorMsg))
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
