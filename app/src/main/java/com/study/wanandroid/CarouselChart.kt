@@ -5,23 +5,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -31,61 +27,82 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.study.wanandroid.entity.BannerImage
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 //轮播图
 @Composable
 fun Banner(viewModel: MainViewModel) {
-    val bannerState = viewModel.bannerState.collectAsState()
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//    ) {
-    when (bannerState.value) {
-        is BannerState.Loading -> {}
-        is BannerState.Success -> {
-            val images = (bannerState.value as BannerState.Success).banner
-            BannerHorizontalPager(images = images)
+    val bannerState by viewModel.bannerState.collectAsState()
+    when (val state = bannerState) {
+        is BannerState.Loading -> {
+
         }
 
-        is BannerState.Error -> {}
+        is BannerState.Success -> {
+            if (state.banner.isNotEmpty()) {
+                BannerHorizontalPager(images = state.banner)
+            }
+        }
+
+        is BannerState.Error -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable { viewModel.retryBanner() },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "加载失败，点击重试",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
     }
-    //}
 }
 
 @Composable
 fun BannerHorizontalPager(images: List<BannerImage>, autoScrollDuration: Long = 3000L) {
-    val pagerCount = images.size
-    val pagerState = rememberPagerState {
-        pagerCount
-    }
+    val actualCount = images.size
+    if (actualCount == 0) return
+
+    //无限轮播核心：一个极大的虚拟页数
+    val virtualCount = Int.MAX_VALUE
+    //初始页面设置在中间，且取模后正好对应真实的第 0 张图
+    val initialPage = virtualCount / 2 - (virtualCount / 2) % actualCount
+    val pagerState = rememberPagerState(initialPage = initialPage) { virtualCount }
     Box(
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
         HorizontalPager(
+            modifier = Modifier.fillMaxSize(),
             state = pagerState,
-            contentPadding = PaddingValues(horizontal = 10.dp),
-            pageSpacing = 16.dp
-        ) { index ->
+            //contentPadding = PaddingValues(horizontal = 10.dp),
+            //pageSpacing = 16.dp
+        ) { page ->
+            val realIndex = page % actualCount
             BannerCard(
-                bannerImage = images[index],
-                modifier = Modifier.padding(10.dp)
+                bannerImage = images[realIndex],
+                modifier = Modifier.fillMaxSize()
             )
         }
-        DotIndicators(pageCount = pagerCount, pagerState = pagerState)
+        DotIndicators(
+            pageCount = actualCount,
+            currentPage = pagerState.currentPage % actualCount,
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
     }
 
+    //用户滑动/自动轮播
     val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
-    if (isDragged.not()) {
-        with(pagerState) {
-            var currentPageKey by remember { mutableIntStateOf(0) }
-            LaunchedEffect(key1 = currentPageKey) {
-                launch {
-                    delay(timeMillis = autoScrollDuration)
-                    val nextPage = (currentPage + 1).mod(pagerCount)
-                    animateScrollToPage(page = nextPage)
-                    currentPageKey = nextPage
-                }
+    LaunchedEffect(
+        key1 = isDragged,//boolean,从一个布尔值变为另一个布尔值时重启
+    ) {
+        if (!isDragged) {
+            while (true) {
+                delay(timeMillis = autoScrollDuration)
+                //virtualCount足够大，可以直接+1
+                pagerState.animateScrollToPage(pagerState.currentPage + 1)
             }
         }
     }
@@ -108,7 +125,8 @@ fun BannerCard(bannerImage: BannerImage, modifier: Modifier = Modifier) {
                 .crossfade(true)//在请求成功完成时启用淡入淡出动画
                 .build(),
             contentDescription = bannerImage.desc,
-            contentScale = ContentScale.FillBounds,
+            contentScale = ContentScale.Crop,//Crop 保持比例并填满容器
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
@@ -116,17 +134,17 @@ fun BannerCard(bannerImage: BannerImage, modifier: Modifier = Modifier) {
 @Composable
 fun DotIndicators(
     pageCount: Int,
-    pagerState: PagerState,
+    currentPage: Int,
     modifier: Modifier = Modifier
 ) {
     Row(
-        //modifier = modifier.padding(bottom = 7.dp),
+        modifier = modifier,
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.CenterVertically
     ) {
         repeat(pageCount) { iteration ->
-            val color = if (pagerState.currentPage == iteration) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.onSurface
+            val color = if (currentPage == iteration) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
 
             Canvas(
                 modifier = Modifier

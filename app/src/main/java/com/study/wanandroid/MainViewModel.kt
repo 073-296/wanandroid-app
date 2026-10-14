@@ -38,10 +38,6 @@ class MainViewModel(
 //        }
 //    }
 
-    init {
-        getBanner()
-    }
-
     //首页文章列表
     val articles: Flow<PagingData<ArticleDetail>> = repository
         .getArticles()
@@ -90,19 +86,26 @@ class MainViewModel(
     }
 
     //轮播图
-    private val _bannerState = MutableStateFlow<BannerState>(BannerState.Loading)
-    val bannerState: StateFlow<BannerState> = _bannerState.asStateFlow()
-
-    fun getBanner() {
-        viewModelScope.launch {
-            repository.getBanner()
-                .onSuccess {
-                    _bannerState.value = BannerState.Success(it.data)
-                }
-                .onFailure {
-                    _bannerState.value = BannerState.Error(it.message ?: "轮播图获取失败")
-                }
+    //重新加载触发器
+    private val _bannerTrigger = MutableStateFlow(0)
+    val bannerState: StateFlow<BannerState> = _bannerTrigger
+        .flatMapLatest {
+            repository.getBannerFlow()
         }
+        .map { result ->
+            result.fold(
+                onSuccess = { BannerState.Success(it.data) },
+                onFailure = { BannerState.Error(it.message ?: "轮播图获取失败") }
+            )
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = BannerState.Loading
+        )
+
+    fun retryBanner(){
+        _bannerTrigger.value++
     }
 }
 

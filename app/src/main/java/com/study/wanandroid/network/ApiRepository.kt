@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import com.study.wanandroid.entity.ArticleDetail
 import com.study.wanandroid.entity.BannerResponse
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class ApiRepository(
     private val api: ApiService = RetrofitClient.apiService
@@ -50,6 +51,10 @@ class ApiRepository(
     }
 
     //获取轮播图
+    //把请求数据变成数据流
+    fun getBannerFlow(): Flow<Result<BannerResponse>> = flow {
+        emit(getBanner())
+    }
     suspend fun getBanner(): Result<BannerResponse> {
         return try {
             val response = api.getBanner()
