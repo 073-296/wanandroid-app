@@ -75,7 +75,9 @@ private fun HomeScreenTopBar(
         },
         actions = {
             Icon(
-                modifier = Modifier.clickable(onClick = searchOnClick).size(30.dp),
+                modifier = Modifier
+                    .clickable(onClick = searchOnClick)
+                    .size(30.dp),
                 imageVector = Icons.Default.Search,
                 contentDescription = stringResource(R.string.search),
                 tint = MaterialTheme.colorScheme.primary
@@ -97,96 +99,99 @@ private fun HomeScreenBottomBar(onClick: (String) -> Unit) {
 private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
     val lazyPagingItems: LazyPagingItems<ArticleDetail> =
         viewModel.articles.collectAsLazyPagingItems()
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(10.dp)
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+        ) {
 
-        //轮播图
-        item {
-            Box(
-                modifier = Modifier
-                    .height(180.dp)
-                    .fillMaxWidth()
-            ) {
-                Banner(viewModel)
+            //轮播图
+            item {
+                Box(
+                    modifier = Modifier
+                        .height(180.dp)
+                        .fillMaxWidth()
+                ) {
+                    Banner(viewModel)
+                }
             }
-        }
 
-        //文章列表
-        items(
-            count = lazyPagingItems.itemCount,
-            key = lazyPagingItems.itemKey { it.id }
-        ) { index ->
-            val article = lazyPagingItems[index]
-            article?.let { ArticleItem(articleDetail = it) }
-        }
+            //文章列表
+            items(
+                count = lazyPagingItems.itemCount,
+                key = lazyPagingItems.itemKey { it.id }
+            ) { index ->
+                val article = lazyPagingItems[index]
+                article?.let { ArticleItem(articleDetail = it) }
+            }
 
-        //底部加载状态
-        when (lazyPagingItems.loadState.append) {
-            is LoadState.Loading -> {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .size(10.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+            //底部加载状态
+            when (lazyPagingItems.loadState.append) {
+                is LoadState.Loading -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "加载中...")
+                        }
                     }
+                }
+
+                is LoadState.Error -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "加载失败，点击重试",
+                                modifier = Modifier.clickable(onClick = { lazyPagingItems.retry() })
+                            )
+                        }
+                    }
+                }
+
+                else -> Unit
+            }
+
+
+        }
+
+        //首次加载/刷新状态
+        when (lazyPagingItems.loadState.refresh) {
+            is LoadState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
             }
 
             is LoadState.Error -> {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "加载失败，点击重试",
-                            modifier = Modifier.clickable(onClick = { lazyPagingItems.retry() })
-                        )
-                    }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "加载失败，点击重试",
+                        modifier = Modifier.clickable(onClick = { lazyPagingItems.retry() })
+                    )
                 }
             }
 
             else -> Unit
         }
-
-
-    }
-
-    //首次加载/刷新状态
-    when (lazyPagingItems.loadState.refresh) {
-        is LoadState.Loading -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-
-        is LoadState.Error -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "加载失败，点击重试",
-                    modifier = Modifier.clickable(onClick = { lazyPagingItems.retry() })
-                )
-            }
-        }
-
-        else -> Unit
     }
 }
 
