@@ -100,7 +100,9 @@ class MainViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            //SharingStarted.Eagerly：立即启动，永不停止
+            //SharingStarted.Lazily：第一个订阅者出现时启动，永不停止
+            started = SharingStarted.WhileSubscribed(5000),//有订阅者时运行，最后一个订阅者离开后等 stopTimeoutMillis 再停止
             initialValue = BannerState.Loading
         )
 
