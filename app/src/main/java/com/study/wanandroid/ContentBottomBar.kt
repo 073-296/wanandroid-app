@@ -22,6 +22,7 @@ import com.study.wanandroid.ui.theme.WanAndroidTheme
 //底部导航栏
 @Composable
 fun ContentBottomBar(
+    currentRoute: String?,
     onClick: (route: String) -> Unit
 ) {
     val items = listOf(
@@ -29,18 +30,12 @@ fun ContentBottomBar(
         WanAndroidRoute.Collect.name,
         WanAndroidRoute.Mine.name
     )
-    var selectedIndex by remember { mutableIntStateOf(0) }
     NavigationBar {
         items.forEachIndexed { index, route ->
             NavigationBarItem(
-                selected = index == selectedIndex,
+                selected = currentRoute == route,
                 onClick = {
-                    selectedIndex = index
-                    when (index) {
-                        0 -> onClick(WanAndroidRoute.Home.name)
-                        1 -> onClick(WanAndroidRoute.Collect.name)
-                        2 -> onClick(WanAndroidRoute.Mine.name)
-                    }
+                    onClick(route)
                 },
                 icon = {
                     when (index) {
@@ -79,6 +74,6 @@ fun ContentBottomBar(
 @Composable
 fun ContentBottomBarPreview() {
     WanAndroidTheme {
-        ContentBottomBar(onClick = {})
+        //ContentBottomBar(onClick = {})
     }
 }

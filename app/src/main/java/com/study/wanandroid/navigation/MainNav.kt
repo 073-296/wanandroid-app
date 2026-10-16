@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,8 +31,9 @@ fun MainNav(
     navController: NavHostController = rememberNavController(),
     viewModel: MainViewModel = viewModel()
 ) {
-    //返回堆栈的引用
+    //获取当前返回栈的栈顶条目，用它的 destination.route 判断当前页面
     val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination?.route
     NavHost(
         navController = navController,
         startDestination = if (isLogin) WanAndroidRoute.Home.name else WanAndroidRoute.Login.name
@@ -45,8 +47,18 @@ fun MainNav(
         composable(route = WanAndroidRoute.Home.name) {
             HomeScreen(
                 viewModel = viewModel,
-                articleOnClick = { route ->
-                    navController.navigate(route)
+                currentRoute = currentRoute,
+                bottomBarOnClick = { route ->
+                    navController.navigate(route) {
+                        //弹出到起始目的地（Home），保存状态
+                        popUpTo(WanAndroidRoute.Home.name) {
+                            saveState = true//弹出时保存被弹出页面的状态（如列表滚动位置）
+                        }
+                        //避免重复创建同一个目的地
+                        launchSingleTop = true
+                        //恢复之前保存的状态（滚动位置，输入内容等）
+                        restoreState = true
+                    }
                 },
                 searchOnClick = {
                     navController.navigate(WanAndroidRoute.Search.name)
