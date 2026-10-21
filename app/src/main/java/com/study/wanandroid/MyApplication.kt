@@ -7,5 +7,6 @@ class MyApplication: Application() {
     override fun onCreate() {
         super.onCreate()
         RetrofitClient.init(this)
+        ToastUtils.init(this)
     }
 }

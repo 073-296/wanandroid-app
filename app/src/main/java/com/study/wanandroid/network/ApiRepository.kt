@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.study.wanandroid.entity.ArticleDetail
 import com.study.wanandroid.entity.BannerResponse
+import com.study.wanandroid.entity.UserInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -55,11 +56,54 @@ class ApiRepository(
     fun getBannerFlow(): Flow<Result<BannerResponse>> = flow {
         emit(getBanner())
     }
+
     suspend fun getBanner(): Result<BannerResponse> {
         return try {
             val response = api.getBanner()
             if (response.errorCode == 0) {
                 Result.success(response)
+            } else {
+                Result.failure(Exception(response.errorMsg))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    //登录
+    suspend fun login(username: String, password: String): Result<UserInfo> {
+        return try {
+            val response = api.login(username, password)
+            if (response.errorCode == 0 && response.data != null) {
+                Result.success(response.data)
+            } else {
+                Result.failure(Exception(response.errorMsg))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    //注册
+    suspend fun register(username: String, password: String, repassword: String): Result<Unit> {
+        return try {
+            val response = api.register(username, password, repassword)
+            if (response.errorCode == 0) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception(response.errorMsg))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    //退出登录
+    suspend fun logout(): Result<Unit> {
+        return try {
+            val response = api.logout()
+            if (response.errorCode == 0) {
+                Result.success(Unit)
             } else {
                 Result.failure(Exception(response.errorMsg))
             }
