@@ -20,6 +20,10 @@ object RetrofitClient {
         cookieJar = PersistentCookieJar(context = context)
     }
 
+    fun getCookieJar(): PersistentCookieJar{
+        return cookieJar
+    }
+
     //日志拦截器
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = if (BuildConfig.DEBUG) {
@@ -32,7 +36,7 @@ object RetrofitClient {
     //通用请求头拦截器
     private val headerInterceptor = Interceptor { chain ->
         val request = chain.request().newBuilder()
-            .addHeader("Content-Type", "application/json")
+            //.addHeader("Content-Type", "application/json")
             .addHeader("Accept", "application/json")
             .build()
         chain.proceed(request)

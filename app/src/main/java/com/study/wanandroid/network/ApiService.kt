@@ -1,8 +1,9 @@
 package com.study.wanandroid.network
 
+import com.study.wanandroid.entity.ApiResponse
 import com.study.wanandroid.entity.ArticleResponse
 import com.study.wanandroid.entity.BannerResponse
-import com.study.wanandroid.entity.LoginRequest
+import com.study.wanandroid.entity.UserInfo
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -16,7 +17,20 @@ interface ApiService {
     suspend fun login(
         @Field("username") username: String,
         @Field("password") password: String
-    ): LoginRequest
+    ): ApiResponse<UserInfo>
+
+    //注册
+    @FormUrlEncoded
+    @POST("user/register")
+    suspend fun register(
+        @Field("username") username:String,
+        @Field("password") password:String,
+        @Field("repassword") repassword:String
+    ): ApiResponse<Unit>
+
+    //退出登录
+    @GET("user/logout/json")
+    suspend fun logout(): ApiResponse<Unit>
 
     // 获取文章列表
     @GET("article/list/{page}/json")

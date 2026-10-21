@@ -1,5 +1,7 @@
 package com.study.wanandroid
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -7,6 +9,8 @@ import androidx.paging.cachedIn
 import com.study.wanandroid.entity.ArticleDetail
 import com.study.wanandroid.entity.BannerImage
 import com.study.wanandroid.network.ApiRepository
+import com.study.wanandroid.network.PersistentCookieJar
+import com.study.wanandroid.network.RetrofitClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,8 +24,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MainViewModel(
+    application: Application
+) : AndroidViewModel(application) {
+
     private val repository: ApiRepository = ApiRepository()
-) : ViewModel() {
+    private val cookieJar: PersistentCookieJar = RetrofitClient.getCookieJar()
 
 //    private val _articlesState = MutableStateFlow<ArticlesState>(ArticlesState.Loading)
 //    val articlesState: StateFlow<ArticlesState> = _articlesState.asStateFlow()
@@ -106,8 +113,55 @@ class MainViewModel(
             initialValue = BannerState.Loading
         )
 
-    fun retryBanner(){
+    fun retryBanner() {
         _bannerTrigger.value++
+    }
+
+    //是否为已登录的状态（初始值通过cookie判断）
+    private val _isLoggedIn = MutableStateFlow(cookieJar.hasCookies())
+    val isLogged: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+
+    //登录结果状态（用作ui的提示信息）
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
+    val authState: StateFlow<AuthState> = _authState.asStateFlow()
+
+    //登录
+    fun login(username: String, password: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            repository.login(username, password)
+                .onSuccess {
+                    _isLoggedIn.value = true//更新登录状态
+                    _authState.value = AuthState.Success
+                }
+                .onFailure {
+                    _authState.value = AuthState.Error(it.message ?: "登录失败")
+                }
+        }
+    }
+
+    //注册
+    fun register(username: String, password: String, repassword: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            repository.register(username, password, repassword)
+                .onSuccess {
+                    _authState.value = AuthState.RegisterSuccess//注册成功，跳转到登录
+                }
+                .onFailure {
+                    _authState.value = AuthState.Error(it.message ?: "注册失败")
+                }
+        }
+    }
+
+    //退出登录
+    fun logout() {
+        viewModelScope.launch {
+            repository.logout().onSuccess {
+                cookieJar.clear()//退出成功时清理本地cookie
+                _isLoggedIn.value = false
+            }
+        }
     }
 }
 
@@ -122,4 +176,13 @@ sealed class BannerState {
     object Loading : BannerState()
     data class Success(val banner: List<BannerImage>) : BannerState()
     data class Error(val message: String) : BannerState()
+}
+
+//认证状态
+sealed class AuthState {
+    object Idle : AuthState()
+    object Loading : AuthState()
+    object Success : AuthState()
+    object RegisterSuccess : AuthState()
+    data class Error(val message: String) : AuthState()
 }
