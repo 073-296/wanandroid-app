@@ -23,6 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.currentStateAsState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.study.wanandroid.entity.BannerImage
@@ -70,6 +73,8 @@ fun BannerHorizontalPager(images: List<BannerImage>, autoScrollDuration: Long = 
     //初始页面设置在中间，且取模后正好对应真实的第 0 张图
     val initialPage = virtualCount / 2 - (virtualCount / 2) % actualCount
     val pagerState = rememberPagerState(initialPage = initialPage) { virtualCount }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val isResumed by lifecycleOwner.lifecycle.currentStateAsState()
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
@@ -97,8 +102,9 @@ fun BannerHorizontalPager(images: List<BannerImage>, autoScrollDuration: Long = 
     val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
     LaunchedEffect(
         key1 = isDragged,//boolean,从一个布尔值变为另一个布尔值时重启
+        key2 = isResumed
     ) {
-        if (!isDragged) {
+        if (!isDragged && isResumed == Lifecycle.State.RESUMED) {
             while (true) {
                 delay(timeMillis = autoScrollDuration)
                 //virtualCount足够大，可以直接+1
