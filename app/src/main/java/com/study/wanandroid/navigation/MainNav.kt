@@ -85,7 +85,7 @@ fun MainNav(
             //我的
             composable(route = WanAndroidRoute.Mine.name) {
                 MineScreen(
-                    //viewModel = viewModel,
+                    viewModel = viewModel,
                     currentRoute = currentRoute,
                     bottomBarOnClick = navigateToBottomTab
                 )

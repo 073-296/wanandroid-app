@@ -150,14 +150,18 @@ fun CustomSwitchingPage(
 
     //todo:登录成功和退出成功的json体一样的，都进入到AuthState.Success这条分支了
     LaunchedEffect(authState) {
-        when (authState) {
+        when (val state=authState) {
             is AuthState.Loading -> {
-                ToastUtils.show("请稍后")
+                //ToastUtils.show("请稍后")
             }
 
             is AuthState.Success -> {
                 //Toast.makeText(context,"登录成功", Toast.LENGTH_SHORT).show()
-                ToastUtils.show("登录成功")
+//                if (state.userInfo != null) {
+//                    ToastUtils.show("登录成功")
+//                } else {
+//                    ToastUtils.show("退出成功")
+//                }
             }
 
             is AuthState.RegisterSuccess -> {

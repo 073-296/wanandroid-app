@@ -49,4 +49,8 @@ interface ApiService {
         @Path("page") page:Int,
         @Field("k") keyWord:String
     ): ArticleResponse
+
+    //用户积分、用户名
+    @GET("lg/coin/userinfo/json")
+    suspend fun getUserInfo(): ApiResponse<UserInfo>
 }

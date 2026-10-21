@@ -1,6 +1,7 @@
 package com.study.wanandroid
 
 import android.app.Application
+import androidx.compose.runtime.State
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.study.wanandroid.entity.ArticleDetail
 import com.study.wanandroid.entity.BannerImage
+import com.study.wanandroid.entity.UserInfo
 import com.study.wanandroid.network.ApiRepository
 import com.study.wanandroid.network.PersistentCookieJar
 import com.study.wanandroid.network.RetrofitClient
@@ -125,17 +127,43 @@ class MainViewModel(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
+    //存储当前登录用户的个人信息
+    private val _userInfo = MutableStateFlow<UserInfo?>(null)
+    val userInfo: StateFlow<UserInfo?> = _userInfo.asStateFlow()
+
     //登录
     fun login(username: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             repository.login(username, password)
-                .onSuccess {
+                .onSuccess { userInfo ->
                     _isLoggedIn.value = true//更新登录状态
-                    _authState.value = AuthState.Success
+                    _userInfo.value = userInfo
+                    _authState.value = AuthState.Success(userInfo)
                 }
                 .onFailure {
                     _authState.value = AuthState.Error(it.message ?: "登录失败")
+                }
+        }
+    }
+
+    init {
+        // 如果发现本地有 Cookie，说明已登录，自动去请求一次用户信息
+        if (cookieJar.hasCookies()) {
+            fetchUserInfo()
+        }
+    }
+
+    private fun fetchUserInfo() {
+        viewModelScope.launch {
+            repository.getUserInfo()
+                .onSuccess { userInfo ->
+                    _userInfo.value = userInfo
+                }
+                .onFailure {
+                    // 如果获取失败（比如 Cookie 过期了），就把登录态清掉
+                    cookieJar.clear()
+                    _isLoggedIn.value = false
                 }
         }
     }
@@ -160,6 +188,8 @@ class MainViewModel(
             repository.logout().onSuccess {
                 cookieJar.clear()//退出成功时清理本地cookie
                 _isLoggedIn.value = false
+                _userInfo.value = null
+                _authState.value = AuthState.Success(null)
             }
         }
     }
@@ -182,7 +212,7 @@ sealed class BannerState {
 sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
-    object Success : AuthState()
+    data class Success(val userInfo: UserInfo? = null) : AuthState()
     object RegisterSuccess : AuthState()
     data class Error(val message: String) : AuthState()
 }

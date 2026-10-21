@@ -112,4 +112,18 @@ class ApiRepository(
         }
     }
 
+    //用户积分、用户名
+    suspend fun getUserInfo(): Result<UserInfo>{
+        return try {
+            val response = api.getUserInfo()
+            if(response.errorCode==0 && response.data!=null){
+                Result.success(response.data)
+            }else{
+                Result.failure(Exception(response.errorMsg))
+            }
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
 }
