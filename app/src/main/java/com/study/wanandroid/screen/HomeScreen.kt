@@ -89,7 +89,7 @@ private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(10.dp)
+                .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 0.dp)
         ) {
 
             //轮播图
