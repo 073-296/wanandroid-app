@@ -178,58 +178,58 @@ private fun LoginContent(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    Box(
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .imePadding()
-            .verticalScroll(rememberScrollState()),
-        contentAlignment = Alignment.Center
+            .imePadding()// 保证键盘弹起时底部留白
+            .verticalScroll(rememberScrollState())// 允许键盘弹出时滚动
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+
+        Spacer(modifier = Modifier.height(80.dp))
+
+        OutlinedTextField(
+            value = account,
+            onValueChange = { account = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("账号") },
+            placeholder = { Text("请输入账号") },
+            singleLine = true,
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("密码") },
+            placeholder = { Text("请输入密码") },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                keyboardController?.hide()
+                focusManager.clearFocus()
+                onLoginClick(account, password)
+            },
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            OutlinedTextField(
-                value = account,
-                onValueChange = { account = it },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("账号") },
-                placeholder = { Text("请输入账号") },
-                singleLine = true,
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("密码") },
-                placeholder = { Text("请输入密码") },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                    onLoginClick(account, password)
-                },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(stringResource(R.string.login))
-            }
-
-            TextButton(onClick = onGoRegister) {
-                Text("没有账号？去注册")
-            }
+            Text(stringResource(R.string.login))
         }
+
+        TextButton(onClick = onGoRegister) {
+            Text("没有账号？去注册")
+        }
+
+        // 底部留白，防止内容太少时无法滚动
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
@@ -246,77 +246,75 @@ private fun RegisterContent(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    Box(
+    Column(
         modifier = modifier
             .fillMaxSize()
             .imePadding()
-            .verticalScroll(rememberScrollState()),
-        contentAlignment = Alignment.Center,
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Spacer(modifier = Modifier.height(50.dp))
+
+        OutlinedTextField(
+            value = account,
+            onValueChange = { account = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("账号") },
+            placeholder = { Text("请设置账号") },
+            singleLine = true,
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("密码") },
+            placeholder = { Text("请设置密码") },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = rePassword,
+            onValueChange = { rePassword = it },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("确认密码") },
+            placeholder = { Text("请再次输入密码") },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            isError = rePassword.isNotEmpty() && rePassword != password,
+            supportingText = {
+                if (rePassword.isNotEmpty() && rePassword != password) {
+                    Text("两次输入的密码不一致")
+                }
+            },
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                keyboardController?.hide()
+                focusManager.clearFocus()
+                onRegisterClick(account, password, rePassword)
+            },
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            OutlinedTextField(
-                value = account,
-                onValueChange = { account = it },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("账号") },
-                placeholder = { Text("请设置账号") },
-                singleLine = true,
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("密码") },
-                placeholder = { Text("请设置密码") },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = rePassword,
-                onValueChange = { rePassword = it },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("确认密码") },
-                placeholder = { Text("请再次输入密码") },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                isError = rePassword.isNotEmpty() && rePassword != password,
-                supportingText = {
-                    if (rePassword.isNotEmpty() && rePassword != password) {
-                        Text("两次输入的密码不一致")
-                    }
-                },
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                    onRegisterClick(account, password, rePassword)
-                },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(stringResource(R.string.register))
-            }
-
-            TextButton(onClick = onGoLogin) {
-                Text("已有账号？去登录")
-            }
+            Text(stringResource(R.string.register))
         }
+
+        TextButton(onClick = onGoLogin) {
+            Text("已有账号？去登录")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
