@@ -1,12 +1,17 @@
 package com.study.wanandroid
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
@@ -30,50 +35,51 @@ fun ArticleItem(modifier: Modifier = Modifier, articleDetail: ArticleDetail = Ar
     Card(
         modifier = modifier
             .padding(10.dp)
+            .heightIn(min = 80.dp)
             .clickable { customTab(context, articleDetail.link) }
     ) {
         Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(10.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 modifier = Modifier
                     .weight(1f)
+                    .padding(1.dp)
             ) {
                 Text(
                     text = articleDetail.title,
-                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    style = MaterialTheme.typography.titleMedium,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    maxLines = 2,
+                    minLines = 2
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = if (articleDetail.author != "") stringResource(
                         R.string.author,
                         articleDetail.author
                     ) else stringResource(R.string.share_user, articleDetail.shareUser),
-                    fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                    style = MaterialTheme.typography.labelLarge,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-            Spacer(
-                modifier = Modifier
-                    .size(15.dp)
-                    .align(Alignment.CenterVertically)
-            )
             Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = stringResource(R.string.collect),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .size(20.dp)
+                    .size(30.dp)
                     .clickable(onClick = {
                         //todo 收藏文章
                     })
             )
         }
+
     }
 }
 
