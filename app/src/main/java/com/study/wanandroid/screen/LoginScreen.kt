@@ -34,6 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -172,6 +174,10 @@ private fun LoginContent(
     var account by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
+    //收起键盘
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -210,7 +216,11 @@ private fun LoginContent(
             Spacer(Modifier.height(24.dp))
 
             Button(
-                onClick = { onLoginClick(account, password) },
+                onClick = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                    onLoginClick(account, password)
+                },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(stringResource(R.string.login))
@@ -232,6 +242,9 @@ private fun RegisterContent(
     var account by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var rePassword by rememberSaveable { mutableStateOf("") }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     Box(
         modifier = modifier
@@ -290,7 +303,11 @@ private fun RegisterContent(
             Spacer(Modifier.height(24.dp))
 
             Button(
-                onClick = { onRegisterClick(account, password, rePassword) },
+                onClick = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                    onRegisterClick(account, password, rePassword)
+                },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(stringResource(R.string.register))

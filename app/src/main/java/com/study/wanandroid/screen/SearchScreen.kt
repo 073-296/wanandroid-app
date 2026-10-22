@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -54,8 +55,10 @@ fun SearchScreen(
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
     val isSearchActive by viewModel.isSearchActive.collectAsState()
     var inputText by remember { mutableStateOf("") }
+
     //控制键盘收起
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     //用户手势返回HomeScreen时，清空搜索记录
     DisposableEffect(Unit) {
@@ -104,8 +107,9 @@ fun SearchScreen(
                     trailingIcon = {
                         IconButton(
                             onClick = {
-                                viewModel.search(inputText)
                                 keyboardController?.hide()
+                                focusManager.clearFocus()
+                                viewModel.search(inputText)
                             }
                         ) {
                             Icon(
@@ -122,8 +126,9 @@ fun SearchScreen(
                     ),
                     keyboardActions = KeyboardActions(
                         onSearch = {
-                            viewModel.search(inputText)
                             keyboardController?.hide()
+                            focusManager.clearFocus()
+                            viewModel.search(inputText)
                         }
                     )
                 )
