@@ -40,9 +40,10 @@ fun HomeScreen(
     bottomBarOnClick: (route: String) -> Unit,
     searchOnClick: () -> Unit
 ) {
-
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             HomeScreenTopBar(searchOnClick)
         },

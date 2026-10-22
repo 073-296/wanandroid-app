@@ -34,6 +34,7 @@ fun MineScreen(
     val userInfo by viewModel.userInfo.collectAsState()
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             ContentBottomBar(
                 currentRoute = currentRoute,
