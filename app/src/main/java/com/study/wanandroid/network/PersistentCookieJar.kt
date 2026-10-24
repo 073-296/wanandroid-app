@@ -6,15 +6,12 @@ import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 
 class PersistentCookieJar(context: Context) : CookieJar {
     private val cookieFile = File(context.filesDir, "cookies.txt")
 
     //内存缓存+文件持久化
+    //键：域名；值：cookie列表
     private val cookieStore = mutableMapOf<String, MutableList<Cookie>>()
 
     init {
@@ -23,7 +20,6 @@ class PersistentCookieJar(context: Context) : CookieJar {
 
     @Synchronized
     override fun loadForRequest(url: HttpUrl): List<Cookie> {
-        //return cookieStore[url.host] ?: emptyList()
 
         val cookies = cookieStore[url.host] ?: return emptyList()
         val now = System.currentTimeMillis()
@@ -46,13 +42,11 @@ class PersistentCookieJar(context: Context) : CookieJar {
         url: HttpUrl,
         cookies: List<Cookie>
     ) {
-        //cookieStore[url.host] = cookies
-        //saveToFile()
         if (cookies.isEmpty()) return
 
         val currentCookies = cookieStore.getOrPut(url.host) { mutableListOf() }
 
-        // 正确的合并逻辑：根据 name 和 path 覆盖同名 Cookie，而不是整体覆盖
+        // 合并逻辑：根据 name 和 path 判断，去除旧的同名 Cookie，添加新的同名Cookie
         for (newCookie in cookies) {
             val iterator = currentCookies.iterator()
             while (iterator.hasNext()) {
@@ -79,8 +73,10 @@ class PersistentCookieJar(context: Context) : CookieJar {
 //            e.printStackTrace()
 //        }
 
+        //临时文件：处理数据写了但没写完报错的情况
         try {
-            cookieFile.bufferedWriter().use { writer ->
+            //往临时文件里写
+            tempFile.bufferedWriter().use { writer ->
                 for (cookies in cookieStore.values) {
                     for (cookie in cookies) {
                         // 使用 toString() 序列化为标准 HTTP Cookie 头格式
@@ -97,16 +93,6 @@ class PersistentCookieJar(context: Context) : CookieJar {
     @Suppress("UNCHECKED_CAST")
     private fun loadFromFile() {
         if (!cookieFile.exists()) return
-//        try {
-//            FileInputStream(cookieFile).use { fis ->
-//                ObjectInputStream(fis).use { ois ->
-//                    val map = ois.readObject() as? HashMap<String, List<Cookie>>
-//                    map?.let { cookieStore.putAll(it) }
-//                }
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
 
         try {
             // 提取到循环外面，只解析一次
@@ -131,8 +117,6 @@ class PersistentCookieJar(context: Context) : CookieJar {
     //判断本地是否持有有效的cookie
     @Synchronized
     fun hasCookies(): Boolean {
-        //return cookieStore.values.any { it.isNotEmpty() }
-
         val now = System.currentTimeMillis()
         // 只要有任何一个未过期的 Cookie，就认为有登录态
         return cookieStore.values.flatten().any { it.expiresAt > now }
