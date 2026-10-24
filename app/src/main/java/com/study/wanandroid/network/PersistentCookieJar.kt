@@ -65,15 +65,8 @@ class PersistentCookieJar(context: Context) : CookieJar {
 
     //文件读写
     private fun saveToFile() {
-//        try {
-//            ObjectOutputStream(FileOutputStream(cookieFile)).use { oos ->
-//                oos.writeObject(HashMap(cookieStore))
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-
         //临时文件：处理数据写了但没写完报错的情况
+        val tempFile = File(cookieFile.parentFile,"cookies.tmp")
         try {
             //往临时文件里写
             tempFile.bufferedWriter().use { writer ->
@@ -85,12 +78,23 @@ class PersistentCookieJar(context: Context) : CookieJar {
                     }
                 }
             }
+
+            // 如果代码能走到这里，说明临时文件写完了，没出任何异常
+            // 现在开始替换：删掉旧的，改名新的
+            if (cookieFile.exists()) {
+                cookieFile.delete()
+            }
+            tempFile.renameTo(cookieFile)
+
         } catch (e: Exception) {
             e.printStackTrace()
+            //如果写临时文件报错了，直接删掉残缺的临时文件，正式文件（旧数据）原封不动
+            if (tempFile.exists()) {
+                tempFile.delete()
+            }
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun loadFromFile() {
         if (!cookieFile.exists()) return
 
