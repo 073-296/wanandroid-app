@@ -4,6 +4,7 @@ import com.study.wanandroid.entity.ApiResponse
 import com.study.wanandroid.entity.ArticleResponse
 import com.study.wanandroid.entity.BannerImage
 import com.study.wanandroid.entity.BannerResponse
+import com.study.wanandroid.entity.ResponseData
 import com.study.wanandroid.entity.UserInfo
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -37,7 +38,7 @@ interface ApiService {
     @GET("article/list/{page}/json")
     suspend fun getArticles(
         @Path("page") page: Int = 0
-    ): ArticleResponse
+    ): ApiResponse<ResponseData>
 
     //轮播图
     @GET("banner/json")
@@ -49,7 +50,7 @@ interface ApiService {
     suspend fun searchArticles(
         @Path("page") page:Int,
         @Field("k") keyWord:String
-    ): ArticleResponse
+    ): ApiResponse<ResponseData>
 
     //用户积分、用户名
     @GET("lg/coin/userinfo/json")
