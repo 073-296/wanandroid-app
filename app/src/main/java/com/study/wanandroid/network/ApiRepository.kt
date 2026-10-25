@@ -3,6 +3,7 @@ package com.study.wanandroid.network
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.study.wanandroid.entity.AccountInfo
 import com.study.wanandroid.entity.ApiResponse
 import com.study.wanandroid.entity.ArticleDetail
 import com.study.wanandroid.entity.BannerImage
@@ -113,10 +114,10 @@ class ApiRepository(
         }
     }
 
-    //用户积分、用户名
-    suspend fun getUserInfo(): Result<UserInfo> {
+    //用户积分，收藏列表数、id，用户信息
+    suspend fun getAccountInfo(): Result<AccountInfo> {
         return try {
-            val response = api.getUserInfo()
+            val response = api.getAccountInfo()
             if (response.errorCode == 0 && response.data != null) {
                 Result.success(response.data)
             } else {

@@ -1,5 +1,6 @@
 package com.study.wanandroid.network
 
+import com.study.wanandroid.entity.AccountInfo
 import com.study.wanandroid.entity.ApiResponse
 import com.study.wanandroid.entity.ArticleResponse
 import com.study.wanandroid.entity.BannerImage
@@ -50,7 +51,7 @@ interface ApiService {
         @Field("k") keyWord:String
     ): ApiResponse<ArticleResponse>
 
-    //用户积分、用户名
-    @GET("lg/coin/userinfo/json")
-    suspend fun getUserInfo(): ApiResponse<UserInfo>
+    //用户积分，收藏列表数、id，用户信息
+    @GET("/user/lg/userinfo/json")
+    suspend fun getAccountInfo(): ApiResponse<AccountInfo>
 }
