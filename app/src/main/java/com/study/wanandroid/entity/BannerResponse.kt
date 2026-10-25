@@ -3,13 +3,6 @@ package com.study.wanandroid.entity
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BannerResponse(
-    val data: List<BannerImage>,
-    val errorCode: Int,
-    val errorMsg: String
-)
-
-@Serializable
 data class BannerImage(
     val desc: String = "",
     val id: Int = -1,
