@@ -22,15 +22,15 @@ data class UserInfo(
 )
 
 // 文章列表响应
-@Serializable
-data class ArticleResponse(
-    val data: ResponseData,
-    val errorCode: Int,
-    val errorMsg: String
-)
+//@Serializable
+//data class ArticleResponse(
+//    val data: ResponseData,
+//    val errorCode: Int,
+//    val errorMsg: String
+//)
 
 @Serializable
-data class ResponseData(
+data class ArticleResponse(
     val datas: List<ArticleDetail>
 )
 
