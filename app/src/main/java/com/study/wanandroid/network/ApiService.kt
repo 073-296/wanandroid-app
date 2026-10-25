@@ -2,6 +2,7 @@ package com.study.wanandroid.network
 
 import com.study.wanandroid.entity.ApiResponse
 import com.study.wanandroid.entity.ArticleResponse
+import com.study.wanandroid.entity.BannerImage
 import com.study.wanandroid.entity.BannerResponse
 import com.study.wanandroid.entity.UserInfo
 import retrofit2.http.Field
@@ -40,7 +41,7 @@ interface ApiService {
 
     //轮播图
     @GET("banner/json")
-    suspend fun getBanner(): BannerResponse
+    suspend fun getBanner(): ApiResponse<List<BannerImage>>
 
     //搜索
     @FormUrlEncoded

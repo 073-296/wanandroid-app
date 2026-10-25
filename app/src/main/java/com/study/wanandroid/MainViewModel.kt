@@ -103,7 +103,7 @@ class MainViewModel(
         }
         .map { result ->
             result.fold(
-                onSuccess = { BannerState.Success(it.data) },
+                onSuccess = { BannerState.Success(it.data ?: emptyList()) },
                 onFailure = { BannerState.Error(it.message ?: "轮播图获取失败") }
             )
         }

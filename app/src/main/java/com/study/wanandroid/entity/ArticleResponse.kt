@@ -14,11 +14,11 @@ data class ApiResponse<T>(
 // 登录返回的用户信息
 @Serializable
 data class UserInfo(
-    val id:Int=0,
-    val username:String="",
-    val nickname:String="",
-    val icon:String="",
-    val coinCount:Int=0
+    val id: Int = 0,
+    val username: String = "",
+    val nickname: String = "",
+    val icon: String = "",
+    val coinCount: Int = 0
 )
 
 // 文章列表响应
@@ -41,7 +41,7 @@ data class ArticleDetail(
     val id: Int = 0,
     val link: String = "",
     val title: String = "",
-    val shareUser:String=""
+    val shareUser: String = ""
 )
 
 
