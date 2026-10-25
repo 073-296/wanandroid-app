@@ -6,7 +6,6 @@ import androidx.paging.PagingData
 import com.study.wanandroid.entity.ApiResponse
 import com.study.wanandroid.entity.ArticleDetail
 import com.study.wanandroid.entity.BannerImage
-import com.study.wanandroid.entity.BannerResponse
 import com.study.wanandroid.entity.UserInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
