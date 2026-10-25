@@ -3,8 +3,10 @@ package com.study.wanandroid.network
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.study.wanandroid.entity.AccountInfo
+import com.study.wanandroid.entity.ApiResponse
 import com.study.wanandroid.entity.ArticleDetail
-import com.study.wanandroid.entity.BannerResponse
+import com.study.wanandroid.entity.BannerImage
 import com.study.wanandroid.entity.UserInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -53,11 +55,11 @@ class ApiRepository(
 
     //获取轮播图
     //把请求数据变成数据流
-    fun getBannerFlow(): Flow<Result<BannerResponse>> = flow {
+    fun getBannerFlow(): Flow<Result<ApiResponse<List<BannerImage>>>> = flow {
         emit(getBanner())
     }
 
-    suspend fun getBanner(): Result<BannerResponse> {
+    suspend fun getBanner(): Result<ApiResponse<List<BannerImage>>> {
         return try {
             val response = api.getBanner()
             if (response.errorCode == 0) {
@@ -112,16 +114,16 @@ class ApiRepository(
         }
     }
 
-    //用户积分、用户名
-    suspend fun getUserInfo(): Result<UserInfo>{
+    //用户积分，收藏列表数、id，用户信息
+    suspend fun getAccountInfo(): Result<AccountInfo> {
         return try {
-            val response = api.getUserInfo()
-            if(response.errorCode==0 && response.data!=null){
+            val response = api.getAccountInfo()
+            if (response.errorCode == 0 && response.data != null) {
                 Result.success(response.data)
-            }else{
+            } else {
                 Result.failure(Exception(response.errorMsg))
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

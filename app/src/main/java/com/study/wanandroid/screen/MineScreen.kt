@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,7 +32,10 @@ fun MineScreen(
     currentRoute: String?,
     bottomBarOnClick: (String) -> Unit
 ) {
-    val userInfo by viewModel.userInfo.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.fetchAccountInfo()
+    }
+    val accountInfo by viewModel.accountInfo.collectAsState()
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -62,10 +66,10 @@ fun MineScreen(
                     modifier = Modifier,
                 ) {
                     Text(
-                        text = userInfo?.username ?: "布吉岛"
+                        text = accountInfo?.userInfo?.username ?: "布吉岛"
                     )
                     Text(
-                        text = "硬币：${userInfo?.coinCount ?: 0}"
+                        text = "硬币：${accountInfo?.coinInfo?.coinCount ?: 0}"
                     )
                 }
             }

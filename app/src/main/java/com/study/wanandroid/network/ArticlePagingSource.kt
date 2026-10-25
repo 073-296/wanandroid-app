@@ -18,7 +18,7 @@ class ArticlePagingSource(
             else api.searchArticles(keyWord = keyword, page = page)
 
             if (response.errorCode == 0) {
-                val articles = response.data.datas ?: emptyList()
+                val articles = response.data?.datas ?: emptyList()
                 LoadResult.Page(
                     data = articles,
                     prevKey = if (page == 0) null else page - 1,
