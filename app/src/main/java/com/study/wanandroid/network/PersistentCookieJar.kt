@@ -20,21 +20,11 @@ class PersistentCookieJar(context: Context) : CookieJar {
 
     @Synchronized
     override fun loadForRequest(url: HttpUrl): List<Cookie> {
-
-        val cookies = cookieStore[url.host] ?: return emptyList()
         val now = System.currentTimeMillis()
-
-        // 过滤掉已过期的 Cookie，并剔除已经不符合当前请求的 Cookie
-        val validCookies = cookies.filter {
+        //遍历所有域名
+        return cookieStore.values.flatten().filter {
             it.expiresAt > now && it.matches(url)
         }
-
-        // 如果发现有过滤掉的 Cookie，顺便保存一下清理后的结果
-        if (validCookies.size != cookies.size) {
-            cookieStore[url.host] = validCookies.toMutableList()
-            saveToFile()
-        }
-        return validCookies
     }
 
     @Synchronized
@@ -66,7 +56,7 @@ class PersistentCookieJar(context: Context) : CookieJar {
     //文件读写
     private fun saveToFile() {
         //临时文件：处理数据写了但没写完报错的情况
-        val tempFile = File(cookieFile.parentFile,"cookies.tmp")
+        val tempFile = File(cookieFile.parentFile, "cookies.tmp")
         try {
             //往临时文件里写
             tempFile.bufferedWriter().use { writer ->
@@ -120,10 +110,11 @@ class PersistentCookieJar(context: Context) : CookieJar {
 
     //判断本地是否持有有效的cookie
     @Synchronized
-    fun hasCookies(): Boolean {
+    fun hasAuthCookie(): Boolean {
         val now = System.currentTimeMillis()
-        // 只要有任何一个未过期的 Cookie，就认为有登录态
-        return cookieStore.values.flatten().any { it.expiresAt > now }
+        return cookieStore.values.flatten().any {
+            it.expiresAt > now && (it.name == "token_pass" || it.name == "loginUserName")
+        }
     }
 
     //清除Cookie(退出登录时使用)

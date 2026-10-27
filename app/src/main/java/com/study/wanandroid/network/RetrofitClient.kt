@@ -20,7 +20,7 @@ object RetrofitClient {
         cookieJar = PersistentCookieJar(context = context)
     }
 
-    fun getCookieJar(): PersistentCookieJar{
+    fun getCookieJar(): PersistentCookieJar {
         return cookieJar
     }
 
@@ -42,10 +42,36 @@ object RetrofitClient {
         chain.proceed(request)
     }
 
+    //全局鉴权拦截器
+    private val authInterceptor = Interceptor { chain ->
+        val response = chain.proceed(chain.request())
+        //检查 HTTP 状态码 401
+        var isUnauthorized = response.code == 401
+
+        //使用 peekBody 克隆一份响应体，不会影响后续 Retrofit 的解析
+        if (!isUnauthorized && response.isSuccessful) {
+            try {
+                val peekBody = response.peekBody(Long.MAX_VALUE).string()
+                if (peekBody.contains("\"errorCode\":-1001") || peekBody.contains("\"errorCode\": -1001")) {
+                    isUnauthorized = true
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        if (isUnauthorized) {
+            SessionEvents.notifyUnauthorized()//发出全局踢出事件
+        }
+
+        response
+    }
+
     //OkHttpClient
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .addInterceptor(headerInterceptor)
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .cookieJar(cookieJar = cookieJar)
             .connectTimeout(30, TimeUnit.SECONDS)

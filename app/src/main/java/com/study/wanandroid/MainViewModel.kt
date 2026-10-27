@@ -12,6 +12,7 @@ import com.study.wanandroid.entity.UserInfo
 import com.study.wanandroid.network.ApiRepository
 import com.study.wanandroid.network.PersistentCookieJar
 import com.study.wanandroid.network.RetrofitClient
+import com.study.wanandroid.network.SessionEvents
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -118,7 +119,7 @@ class MainViewModel(
     }
 
     //是否为已登录的状态（初始值通过cookie判断）
-    private val _isLoggedIn = MutableStateFlow(cookieJar.hasCookies())
+    private val _isLoggedIn = MutableStateFlow(cookieJar.hasAuthCookie())
     val isLogged: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
     //登录结果状态（用作ui的提示信息）
@@ -145,14 +146,19 @@ class MainViewModel(
         }
     }
 
-    //todo:init块只有当这个实例被创建时会被执行
-    //当前用户信息以这种方式执行，退出再登录时，由于viewmodel实例已存在，init块不执行，故没有accountInfo
-//    init {
-//        // 如果发现本地有 Cookie，说明已登录，自动去请求一次用户信息
-//        if (cookieJar.hasCookies()) {
-//            fetchAccountInfo()
-//        }
-//    }
+    //init块只有当这个实例被创建时会被执行
+    init {
+        // 监听全局未授权事件
+        viewModelScope.launch {
+            SessionEvents.onUnauthorized.collect {
+                // 发生未授权，清空 Cookie，重置状态
+                cookieJar.clear()
+                _isLoggedIn.value = false
+                _accountInfo.value = null
+                _authState.value = AuthState.Idle // 或者提示“登录已过期，请重新登录”
+            }
+        }
+    }
 
     fun fetchAccountInfo() {
         viewModelScope.launch {
@@ -161,9 +167,7 @@ class MainViewModel(
                     _accountInfo.value = accountInfo
                 }
                 .onFailure {
-                    // 如果获取失败（比如 Cookie 过期了），就把登录态清掉
-                    cookieJar.clear()
-                    _isLoggedIn.value = false
+                    //依靠全局拦截器处理失败情况
                 }
         }
     }
