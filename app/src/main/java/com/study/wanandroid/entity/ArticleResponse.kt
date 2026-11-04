@@ -14,5 +14,6 @@ data class ArticleDetail(
     val id: Int = 0,
     val link: String = "",
     val title: String = "",
-    val shareUser: String = ""
+    val shareUser: String = "",
+    val niceDate: String = ""
 )
