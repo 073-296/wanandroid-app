@@ -1,7 +1,6 @@
 package com.study.wanandroid.db
 
 import android.content.Context
-import android.util.Log
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -135,21 +134,6 @@ class FavoriteRepository(
         favoriteDao.getPendingAdds(userId)
             .filterNot { it.articleId in remoteIds }
             .forEach { favoriteDao.deleteById(userId,it.articleId) }
-    }
-
-    private suspend fun syncRemoteDeleted(userId: Long, remoteIds: List<Long>) {
-        //内存对比：不依赖SQL的NOT IN，既没有999参数限制，也不会分块误删
-        val remoteSet = remoteIds.toSet()
-        val staleIds = favoriteDao.getSyncedArticleIds(userId).filterNot { it in remoteSet }
-        staleIds.forEach { favoriteDao.deleteById(userId, it) }
-        /*if (remoteIds.isEmpty()) {
-            favoriteDao.deleteAllSynced(userId)
-        } else {
-            //分批处理防止sql not in参数超过999限制
-            remoteIds.chunked(900).forEach { chunk ->
-                favoriteDao.deleteSyncedNotIn(userId, chunk)
-            }
-        }*/
     }
 
     //合并单条远程数据（防覆盖本地分类和状态）

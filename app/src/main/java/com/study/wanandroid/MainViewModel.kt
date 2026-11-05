@@ -7,7 +7,6 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.work.WorkManager
 import com.study.wanandroid.db.AppDatabase
-import com.study.wanandroid.db.CategoryWithCount
 import com.study.wanandroid.db.FavoriteArticleEntity
 import com.study.wanandroid.db.FavoriteRepository
 import com.study.wanandroid.entity.AccountInfo

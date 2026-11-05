@@ -311,36 +311,6 @@ private fun CollectScreenContent(
             }
         }
     }
-    /*Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        if (isRefreshing && favoriteList.isEmpty()) {
-            //正在加载且没有本地缓存，显示加载圈
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
-            )
-        } else if (favoriteList.isEmpty()) {
-            //加载完毕，确实没有数据，显示空态
-            Text(
-                text = "暂无收藏文章",
-                modifier = Modifier.align(Alignment.Center),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        } else {
-            //有数据，显示列表
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(favoriteList, key = { it.articleId }) { article ->
-                    FavoriteArticleItem(
-                        article = article,
-                        onMoreClick = {
-                            onMoreClick(article)
-                        }
-                    )
-                }
-            }
-        }
-    }*/
 }
 
 //侧边栏内容
