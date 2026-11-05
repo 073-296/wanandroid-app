@@ -101,7 +101,7 @@ fun SearchScreen(
                     onValueChange = {
                         inputText = it
                     },
-                    placeholder = { Text(text = "热搜词") },
+                    placeholder = { Text(text = "关键词") },
                     shape = Shapes.small,
                     singleLine = true,
                     trailingIcon = {
