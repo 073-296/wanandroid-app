@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -68,14 +69,19 @@ private fun HomeScreenTopBar(
             Text(text = stringResource(R.string.home))
         },
         actions = {
-            Icon(
-                modifier = Modifier
-                    .clickable(onClick = searchOnClick)
-                    .size(30.dp),
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(R.string.search),
-                tint = MaterialTheme.colorScheme.primary
-            )
+            IconButton(
+                onClick = {
+                     searchOnClick()
+                }
+            ){
+                Icon(
+                    modifier = Modifier
+                        .size(30.dp),
+                    imageVector = Icons.Default.Search,
+                    contentDescription = stringResource(R.string.search),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     )
 }
