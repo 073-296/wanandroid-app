@@ -145,7 +145,7 @@ fun SearchScreen(
                         key = searchResults.itemKey { it.id }
                     ) { index ->
                         val article = searchResults[index]
-                        article?.let { ArticleItem(articleDetail = it) }
+                        article?.let { ArticleItem(articleDetail = it, viewModel = viewModel) }
                     }
 
                     //底部加载状态

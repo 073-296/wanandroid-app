@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -45,6 +46,16 @@ android {
         compose = true
         buildConfig = true
     }
+    ksp{
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.1")
+        force("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+    }
 }
 
 dependencies {
@@ -71,9 +82,9 @@ dependencies {
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     // 序列化 JSON 库
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
     // Retrofit 的序列化转换器
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.12.0")
 
     // OkHttp 网络引擎 (Retrofit 底层依赖它，显式声明可以控制版本)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
@@ -92,6 +103,15 @@ dependencies {
     //内嵌浏览器
     implementation("androidx.browser:browser:1.5.0")
 
-    // Coil
+    //Coil
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    //Room
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
+    implementation(libs.room.paging)
+
+    // WorkManager (Kotlin + Coroutines)
+    implementation("androidx.work:work-runtime-ktx:2.12.0")
 }

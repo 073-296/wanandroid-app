@@ -27,8 +27,8 @@ data class CollectArticleInfo(
 data class UserInfo(
     val admin: Boolean = false,
     val coinCount: Int = 0,
-    //val collectIds: List<Int>,
-    val id: Int = 0,
+    val collectIds: List<Long> = emptyList(),
+    val id: Long = 0L,
     //三者结果一致，用户名能详细显示
     val nickname: String = "",
     val publicName: String = "",

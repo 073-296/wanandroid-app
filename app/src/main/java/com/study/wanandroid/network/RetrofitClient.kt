@@ -1,7 +1,7 @@
 package com.study.wanandroid.network
 
 import android.content.Context
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.study.wanandroid.BuildConfig
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
@@ -84,6 +84,7 @@ object RetrofitClient {
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
+        coerceInputValues = true//服务端字段为 null 时自动用默认值兜底
         encodeDefaults = true//序列化默认值
     }
 

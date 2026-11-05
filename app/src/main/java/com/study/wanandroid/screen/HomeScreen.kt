@@ -110,7 +110,7 @@ private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
                 key = lazyPagingItems.itemKey { it.id }
             ) { index ->
                 val article = lazyPagingItems[index]
-                article?.let { ArticleItem(articleDetail = it) }
+                article?.let { ArticleItem(articleDetail = it, viewModel = viewModel) }
             }
 
             //底部加载状态
@@ -146,8 +146,6 @@ private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
 
                 else -> Unit
             }
-
-
         }
 
         //首次加载/刷新状态

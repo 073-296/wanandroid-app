@@ -32,9 +32,9 @@ fun MineScreen(
     currentRoute: String?,
     bottomBarOnClick: (String) -> Unit
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.fetchAccountInfo()
-    }
+//    LaunchedEffect(Unit) {
+//        viewModel.fetchAccountInfo()
+//    }
     val accountInfo by viewModel.accountInfo.collectAsState()
     Scaffold(
         modifier = modifier.fillMaxSize(),

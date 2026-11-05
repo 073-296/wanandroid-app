@@ -19,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.study.wanandroid.MainViewModel
 import com.study.wanandroid.R
+import com.study.wanandroid.screen.CollectScreen
 import com.study.wanandroid.screen.HomeScreen
 import com.study.wanandroid.screen.LoginScreen
 import com.study.wanandroid.screen.MineScreen
@@ -102,7 +103,11 @@ fun MainNav(
 
         //收藏
         composable(route = WanAndroidRoute.Collect.name) {
-
+            CollectScreen(
+                viewModel=viewModel,
+                currentRoute = currentRoute,
+                bottomBarOnClick = navigateToBottomTab
+            )
         }
 
         //我的

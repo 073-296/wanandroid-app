@@ -4,6 +4,7 @@ import com.study.wanandroid.entity.AccountInfo
 import com.study.wanandroid.entity.ApiResponse
 import com.study.wanandroid.entity.ArticleResponse
 import com.study.wanandroid.entity.BannerImage
+import com.study.wanandroid.entity.FavoriteResponse
 import com.study.wanandroid.entity.UserInfo
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -24,9 +25,9 @@ interface ApiService {
     @FormUrlEncoded
     @POST("user/register")
     suspend fun register(
-        @Field("username") username:String,
-        @Field("password") password:String,
-        @Field("repassword") repassword:String
+        @Field("username") username: String,
+        @Field("password") password: String,
+        @Field("repassword") repassword: String
     ): ApiResponse<Unit>
 
     //退出登录
@@ -47,11 +48,32 @@ interface ApiService {
     @FormUrlEncoded
     @POST("article/query/{page}/json")
     suspend fun searchArticles(
-        @Path("page") page:Int,
-        @Field("k") keyWord:String
+        @Path("page") page: Int,
+        @Field("k") keyWord: String
     ): ApiResponse<ArticleResponse>
 
-    //用户积分，收藏列表数、id，用户信息
+    //用户积分，收藏列表数、id，用户信息、整个收藏列表id
     @GET("/user/lg/userinfo/json")
     suspend fun getAccountInfo(): ApiResponse<AccountInfo>
+
+    //收藏文章列表
+    @GET("lg/collect/list/{page}/json")
+    suspend fun getFavoriteList(
+        @Path("page") page: Int = 0
+    ): ApiResponse<FavoriteResponse>
+
+    //收藏文章
+    @POST("lg/collect/{id}/json")
+    suspend fun addFavorite(
+        @Path("id") id: Long
+    ): ApiResponse<Unit>
+
+    //取消收藏
+    //首页文章列表和搜索界面传递id
+    //收藏处传递originId
+    //数据库中统一是articleId
+    @POST("lg/uncollect_originId/{id}/json")
+    suspend fun removeFavorite(
+        @Path("id") articleId:Long
+    ): ApiResponse<Unit>
 }
