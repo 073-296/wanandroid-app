@@ -26,8 +26,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,10 +55,20 @@ fun MineScreen(
     bottomBarOnClick: (String) -> Unit
 ) {
     val accountInfo by viewModel.accountInfo.collectAsState()
-    val username = accountInfo?.userInfo?.username ?: "未登录用户"
-    val coinCount = accountInfo?.coinInfo?.coinCount ?: 0
-    val level = accountInfo?.coinInfo?.level ?: 1
-    val rank = accountInfo?.coinInfo?.rank ?: "0"
+
+    //退出登录时 accountInfo 会被立刻置空，而页面要等导航动画结束才消失，
+    //中间会闪一下"未登录用户 / 0 硬币"。这里缓存最后一次有效数据继续展示，
+    //等页面真正被销毁后自然失效。
+    var lastAccountInfo by remember { mutableStateOf(accountInfo) }
+    LaunchedEffect(accountInfo) {
+        if (accountInfo != null) lastAccountInfo = accountInfo
+    }
+    val displayInfo = accountInfo ?: lastAccountInfo
+
+    val username = displayInfo?.userInfo?.username ?: "未登录用户"
+    val coinCount = displayInfo?.coinInfo?.coinCount ?: 0
+    val level = displayInfo?.coinInfo?.level ?: 1
+    val rank = displayInfo?.coinInfo?.rank ?: "0"
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
