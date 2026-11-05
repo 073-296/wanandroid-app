@@ -353,6 +353,7 @@ class MainViewModel(
                 favoriteRepo.refreshAll(userId)
             } catch (e: Exception) {
                 e.printStackTrace()
+                ToastUtils.show("刷新失败:${e.message?:"网络异常"}")
             } finally {
                 _isRefreshing.value = false
             }

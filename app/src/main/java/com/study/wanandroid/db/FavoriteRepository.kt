@@ -1,6 +1,7 @@
 package com.study.wanandroid.db
 
 import android.content.Context
+import android.util.Log
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -109,39 +110,46 @@ class FavoriteRepository(
      * 建议在进入收藏界面或下拉刷新时调用
      */
     suspend fun refreshAll(userId: Long) {
-        //1.拉取用户信息获取全量collectIds
-        val accountResp = apiService.getAccountInfo()
-        val collectIds = accountResp.data?.userInfo?.collectIds ?: emptyList()
-
-        //2.本地对账（清理远程取消的）
-        syncRemoteDeleted(userId, collectIds)
-
-        //3.分页拉取详情（用来更新标题、作者等这些“快照”）
+        //分页拉取收藏列表（服务端真实收藏数据），同时收集所有 originId 用于对账
+        val remoteIds = mutableSetOf<Long>()
         var page = 0
-        var hasMore = true
         var indexOffset = 0
-
-        while (hasMore) {
-            val resp = apiService.getFavoriteList(page).data
-            val items = resp?.datas ?: emptyList()
-            hasMore = !(resp?.over ?: true)//over为true表示没有更多了
-
-            for (item in items) {
+        while (true) {
+            val resp = apiService.getFavoriteList(page)
+            //登录失效等业务错误直接抛出，绝不能拿不完整的数据做对账
+            if (resp.errorCode != 0) throw Exception(resp.errorMsg.ifEmpty { "刷新失败" })
+            val data = resp.data ?: break
+            if (data.datas.isEmpty()) break
+            for (item in data.datas) {
                 mergeRemoteData(userId, item, indexOffset++)
+                remoteIds.add(item.originId)
             }
+            if (data.over) break
             page++
         }
+        //以列表真实数据为准对账：删掉本地 SYNCED 但服务端列表里已经没有的文章
+        val staleIds=favoriteDao.getSyncedArticleIds(userId).filterNot { it in remoteIds }
+        staleIds.forEach { favoriteDao.deleteById(userId,it) }
+
+        //清理卡死的 PENDING_ADD：服务端列表里没有，说明上传早已失败
+        favoriteDao.getPendingAdds(userId)
+            .filterNot { it.articleId in remoteIds }
+            .forEach { favoriteDao.deleteById(userId,it.articleId) }
     }
 
     private suspend fun syncRemoteDeleted(userId: Long, remoteIds: List<Long>) {
-        if (remoteIds.isEmpty()) {
+        //内存对比：不依赖SQL的NOT IN，既没有999参数限制，也不会分块误删
+        val remoteSet = remoteIds.toSet()
+        val staleIds = favoriteDao.getSyncedArticleIds(userId).filterNot { it in remoteSet }
+        staleIds.forEach { favoriteDao.deleteById(userId, it) }
+        /*if (remoteIds.isEmpty()) {
             favoriteDao.deleteAllSynced(userId)
         } else {
             //分批处理防止sql not in参数超过999限制
             remoteIds.chunked(900).forEach { chunk ->
                 favoriteDao.deleteSyncedNotIn(userId, chunk)
             }
-        }
+        }*/
     }
 
     //合并单条远程数据（防覆盖本地分类和状态）

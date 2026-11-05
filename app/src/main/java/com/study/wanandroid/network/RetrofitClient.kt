@@ -84,6 +84,7 @@ object RetrofitClient {
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
+        coerceInputValues = true//服务端字段为 null 时自动用默认值兜底
         encodeDefaults = true//序列化默认值
     }
 
