@@ -134,7 +134,13 @@ fun CollectScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = currentCategory.name) },
+                    title = {
+                        Text(
+                            text = currentCategory.name,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
                             Icon(Icons.Default.Menu, contentDescription = "打开分类栏")
