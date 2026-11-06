@@ -1,8 +1,9 @@
 package com.study.wanandroid
 
 import android.app.Application
-import com.study.wanandroid.db.AppDatabase
-import com.study.wanandroid.network.RetrofitClient
+import com.study.wanandroid.common.ToastUtils
+import com.study.wanandroid.data.local.AppDatabase
+import com.study.wanandroid.data.remote.RetrofitClient
 
 class MyApplication: Application() {
     override fun onCreate() {

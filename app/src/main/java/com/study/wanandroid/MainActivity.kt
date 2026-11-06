@@ -9,10 +9,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.study.wanandroid.navigation.MainNav
+import com.study.wanandroid.ui.MainViewModel
+import com.study.wanandroid.ui.navigation.MainNav
 import com.study.wanandroid.ui.theme.WanAndroidTheme
 
 class MainActivity : ComponentActivity() {
