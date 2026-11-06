@@ -6,10 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.study.wanandroid.data.local.dao.CategoryDao
+import com.study.wanandroid.data.local.dao.FavoriteDao
 import com.study.wanandroid.data.local.entity.CategoryEntity
 import com.study.wanandroid.data.local.entity.FavoriteArticleEntity
-import com.study.wanandroid.data.local.dao.FavoriteDao
-import com.study.wanandroid.data.local.Migration_1_2
 
 @Database(
     entities = [

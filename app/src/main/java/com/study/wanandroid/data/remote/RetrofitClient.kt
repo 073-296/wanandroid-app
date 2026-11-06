@@ -2,8 +2,6 @@ package com.study.wanandroid.data.remote
 
 import android.content.Context
 import com.study.wanandroid.BuildConfig
-import com.study.wanandroid.data.remote.PersistentCookieJar
-import com.study.wanandroid.data.remote.SessionEvents
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType

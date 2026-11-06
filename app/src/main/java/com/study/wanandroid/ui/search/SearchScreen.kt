@@ -41,7 +41,6 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.study.wanandroid.ui.component.ArticleItem
-import com.study.wanandroid.ui.MainViewModel
 import com.study.wanandroid.R
 import com.study.wanandroid.ui.theme.Shapes
 import com.study.wanandroid.ui.theme.WanAndroidTheme
@@ -50,10 +49,12 @@ import com.study.wanandroid.ui.theme.WanAndroidTheme
 fun SearchScreen(
     modifier: Modifier = Modifier,
     backToHomeScreen: () -> Unit = {},
-    viewModel: MainViewModel
+    viewModel: SearchViewModel
 ) {
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
     val isSearchActive by viewModel.isSearchActive.collectAsState()
+    val favoriteIds by viewModel.favoriteIds.collectAsState()
+    val userId by viewModel.currentUserId.collectAsState()
     var inputText by remember { mutableStateOf("") }
 
     //控制键盘收起
@@ -145,7 +146,14 @@ fun SearchScreen(
                         key = searchResults.itemKey { it.id }
                     ) { index ->
                         val article = searchResults[index]
-                        article?.let { ArticleItem(articleDetail = it, viewModel = viewModel) }
+                        article?.let {
+                            ArticleItem(
+                                articleDetail = it,
+                                isCollected = it.id.toLong() in favoriteIds,
+                                userId = userId ?: 0L,
+                                onToggleFavorite = { entity -> viewModel.toggleFavorite(entity) }
+                            )
+                        }
                     }
 
                     //底部加载状态

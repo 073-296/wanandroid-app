@@ -17,7 +17,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,8 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.study.wanandroid.ui.MainViewModel
 import com.study.wanandroid.R
 import com.study.wanandroid.common.customTab
 import com.study.wanandroid.data.local.entity.FavoriteArticleEntity
@@ -37,11 +34,11 @@ import com.study.wanandroid.ui.theme.WanAndroidTheme
 fun ArticleItem(
     modifier: Modifier = Modifier.Companion,
     articleDetail: ArticleDetail = ArticleDetail(),
-    viewModel: MainViewModel
+    isCollected: Boolean,//当前文章是否已被收藏
+    userId: Long,//当前登录用户 id（构造收藏实体用）
+    onToggleFavorite: (FavoriteArticleEntity) -> Unit//收藏状态切换回调
 ) {
     val context = LocalContext.current
-    val favoriteIds by viewModel.favoriteIds.collectAsStateWithLifecycle()
-    val isCollected: Boolean = articleDetail.id.toLong() in favoriteIds
     Card(
         modifier = modifier
             .padding(10.dp)
@@ -80,14 +77,14 @@ fun ArticleItem(
             IconButton(
                 onClick = {
                     val entity = FavoriteArticleEntity(
-                        userId = viewModel.currentUserId.value ?: 0L,
+                        userId = userId,
                         articleId = articleDetail.id.toLong(),
                         title = articleDetail.title,
                         author = articleDetail.author.ifBlank { articleDetail.shareUser },
                         link = articleDetail.link,
                         niceDate = articleDetail.niceDate
                     )
-                    viewModel.toggleFavorite(entity)
+                    onToggleFavorite(entity)
                 }
             ) {
                 Icon(

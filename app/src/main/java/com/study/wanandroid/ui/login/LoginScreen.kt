@@ -39,7 +39,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.study.wanandroid.ui.AuthState
-import com.study.wanandroid.ui.MainViewModel
+import com.study.wanandroid.ui.AuthViewModel
 import com.study.wanandroid.R
 import com.study.wanandroid.common.ToastUtils
 import com.study.wanandroid.ui.theme.WanAndroidTheme
@@ -53,7 +53,7 @@ private enum class AuthTab(@StringRes val titleRes: Int) {
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel
+    viewModel: AuthViewModel
 ) {
     Scaffold(
         modifier = modifier,
@@ -71,7 +71,7 @@ fun LoginScreen(
 @Composable
 fun CustomSwitchingPage(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel
+    viewModel: AuthViewModel
 ) {
     val tabs = AuthTab.entries
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { tabs.size })

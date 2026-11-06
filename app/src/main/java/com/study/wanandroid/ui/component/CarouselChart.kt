@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,17 +27,18 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.study.wanandroid.ui.BannerState
-import com.study.wanandroid.ui.MainViewModel
+import com.study.wanandroid.ui.home.BannerState
 import com.study.wanandroid.common.customTab
 import com.study.wanandroid.data.remote.dto.BannerImage
 import kotlinx.coroutines.delay
 
-//轮播图
+//轮播图（无状态组件：状态与重试回调由调用方传入）
 @Composable
-fun Banner(viewModel: MainViewModel) {
-    val bannerState by viewModel.bannerState.collectAsState()
-    when (val state = bannerState) {
+fun Banner(
+    state: BannerState,
+    onRetry: () -> Unit
+) {
+    when (state) {
         is BannerState.Loading -> {
 
         }
@@ -53,7 +53,7 @@ fun Banner(viewModel: MainViewModel) {
             Box(
                 modifier = Modifier.Companion
                     .fillMaxSize()
-                    .clickable { viewModel.retryBanner() },
+                    .clickable { onRetry() },
                 contentAlignment = Alignment.Companion.Center
             ) {
                 Text(

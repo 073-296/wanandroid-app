@@ -10,8 +10,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.study.wanandroid.ui.MainViewModel
 import com.study.wanandroid.ui.navigation.MainNav
 import com.study.wanandroid.ui.theme.WanAndroidTheme
 
@@ -20,30 +18,18 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val sharedPreferences = getSharedPreferences(getString(R.string.sp_record), MODE_PRIVATE)
-        val token = sharedPreferences.getString(getString(R.string.token).toString(), "")
-
-
         setContent {
             WanAndroidTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val viewModel: MainViewModel = viewModel()
-                    MainNav(viewModel = viewModel)
+                    MainNav()
                 }
-                //WanAndroidApp(token = token)
             }
         }
     }
 }
-
-//@Composable
-//fun WanAndroidApp(token: String?) {
-//    val context = LocalContext.current
-//    MainNav()
-//}
 
 @Preview(showBackground = true)
 @Composable
