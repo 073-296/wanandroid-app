@@ -489,11 +489,14 @@ private fun MoveToCategorySheetContent(
                         .fillMaxWidth()
                         .clickable { onMoveTo(item.id) }
                         .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     // 用 Row 把图标和文字包起来，统一视觉
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    // weight(1f) 保证文字再长也不把勾选图标挤出屏幕
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = item.name,
