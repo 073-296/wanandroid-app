@@ -55,6 +55,7 @@ fun SearchScreen(
     val isSearchActive by viewModel.isSearchActive.collectAsState()
     val favoriteIds by viewModel.favoriteIds.collectAsState()
     val userId by viewModel.currentUserId.collectAsState()
+    val activeKeyword by viewModel.activeKeyword.collectAsState()
     var inputText by remember { mutableStateOf("") }
 
     //控制键盘收起
@@ -151,7 +152,8 @@ fun SearchScreen(
                                 articleDetail = it,
                                 isCollected = it.id.toLong() in favoriteIds,
                                 userId = userId ?: 0L,
-                                onToggleFavorite = { entity -> viewModel.toggleFavorite(entity) }
+                                onToggleFavorite = { entity -> viewModel.toggleFavorite(entity) },
+                                highlightKeyword = activeKeyword
                             )
                         }
                     }

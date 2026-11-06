@@ -5,6 +5,7 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.study.wanandroid.common.toPlainText
 import com.study.wanandroid.data.local.dao.CategoryDao
 import com.study.wanandroid.data.local.dao.CategoryWithCount
 import com.study.wanandroid.data.local.dao.FavoriteDao
@@ -156,7 +157,8 @@ class FavoriteRepository(
             val entity = FavoriteArticleEntity(
                 userId = userId,
                 articleId = remote.originId,
-                title = remote.title,
+                //收藏列表接口的 title 同样可能带 HTML 标签/实体，入库前转纯文本
+                title = remote.title.toPlainText(),
                 author = if (remote.author.isNotBlank()) remote.author else local?.author,
                 link = remote.link,
                 niceDate = remote.niceDate,

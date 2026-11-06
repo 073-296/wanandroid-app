@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -46,6 +47,9 @@ class SearchViewModel(
     val isSearchActive: StateFlow<Boolean> = _searchKeyword
         .map { !it.isNullOrBlank() }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    //当前生效的搜索关键词（搜索结果标题高亮用）
+    val activeKeyword: StateFlow<String?> = _searchKeyword.asStateFlow()
 
     val searchResults: Flow<PagingData<ArticleDetail>> = _searchKeyword
         //切换关键词时自动取消上一次搜索

@@ -2,6 +2,7 @@ package com.study.wanandroid.data.remote
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.study.wanandroid.common.toPlainText
 import com.study.wanandroid.data.remote.dto.ArticleDetail
 
 class ArticlePagingSource(
@@ -17,7 +18,9 @@ class ArticlePagingSource(
             else api.searchArticles(keyWord = keyword, page = page)
 
             if (response.errorCode == 0) {
-                val articles = response.data?.datas ?: emptyList()
+                //搜索接口的 title 带 <em class='highlight'> 标签和 HTML 实体，进入 UI 前统一转成纯文本
+                val articles = (response.data?.datas ?: emptyList())
+                    .map { it.copy(title = it.title.toPlainText()) }
                 LoadResult.Page(
                     data = articles,
                     prevKey = if (page == 0) null else page - 1,

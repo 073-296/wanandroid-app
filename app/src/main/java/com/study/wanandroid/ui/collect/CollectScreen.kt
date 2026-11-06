@@ -59,6 +59,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.study.wanandroid.common.toPlainText
 import com.study.wanandroid.ui.component.ContentBottomBar
 import com.study.wanandroid.R
 import com.study.wanandroid.common.ToastUtils
@@ -399,7 +400,8 @@ fun FavoriteArticleItem(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = article.title,
+                    //库里可能存有修复前的原始富文本标题（&gt;、&mdash; 等），展示前统一转纯文本
+                    text = article.title.toPlainText(),
                     style = MaterialTheme.typography.titleMedium,
                     minLines = 2,
                     maxLines = 2,
