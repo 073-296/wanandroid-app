@@ -16,9 +16,8 @@ import com.study.wanandroid.data.remote.dto.BannerImage
 import com.study.wanandroid.ui.collect.Category
 import com.study.wanandroid.data.remote.dto.UserInfo
 import com.study.wanandroid.data.repository.ApiRepository
-import com.study.wanandroid.data.remote.PersistentCookieJar
+import com.study.wanandroid.data.repository.UserSessionRepository
 import com.study.wanandroid.data.remote.RetrofitClient
-import com.study.wanandroid.data.remote.SessionEvents
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,7 +35,7 @@ class MainViewModel(
 ) : AndroidViewModel(application) {
 
     private val repository: ApiRepository = ApiRepository()
-    private val cookieJar: PersistentCookieJar = RetrofitClient.getCookieJar()
+    private val session = UserSessionRepository.getInstance()
 
     private val db = AppDatabase.getInstance()
     private val favoriteRepo = FavoriteRepository(
@@ -133,17 +132,13 @@ class MainViewModel(
         _bannerTrigger.value++
     }
 
-    //是否为已登录的状态（初始值通过cookie判断）
-    private val _isLoggedIn = MutableStateFlow(cookieJar.hasAuthCookie())
-    val isLogged: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+    //登录态与用户信息本体由 UserSessionRepository 持有
+    val isLogged: StateFlow<Boolean> = session.isLoggedIn
+    val accountInfo: StateFlow<AccountInfo?> = session.accountInfo
 
     //登录结果状态（用作ui的提示信息）
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
-
-    //存储当前登录用户的个人信息
-    private val _accountInfo = MutableStateFlow<AccountInfo?>(null)
-    val accountInfo: StateFlow<AccountInfo?> = _accountInfo.asStateFlow()
 
     //登录
     fun login(username: String, password: String) {
@@ -151,10 +146,7 @@ class MainViewModel(
             _authState.value = AuthState.Loading
             repository.login(username, password)
                 .onSuccess { userInfo ->
-                    _isLoggedIn.value = true//更新登录状态
-                    //_userInfo.value = userInfo
-                    //登录成功后立刻获取用户信息
-                    fetchAccountInfo()
+                    session.onLoginSuccess()//更新登录态并拉取用户信息
                     _authState.value = AuthState.Success(userInfo)
                 }
                 .onFailure {
@@ -163,34 +155,8 @@ class MainViewModel(
         }
     }
 
-    //init块只有当这个实例被创建时会被执行
-    init {
-        // 监听全局未授权事件
-        viewModelScope.launch {
-            SessionEvents.onUnauthorized.collect {
-                // 发生未授权，清空 Cookie，重置状态
-                cookieJar.clear()
-                _isLoggedIn.value = false
-                _accountInfo.value = null
-                _authState.value = AuthState.Idle // 或者提示“登录已过期，请重新登录”
-            }
-        }
-        //若启动时已有cookie，主动拉取用户信息
-        if (cookieJar.hasAuthCookie()) {
-            fetchAccountInfo()
-        }
-    }
-
     fun fetchAccountInfo() {
-        viewModelScope.launch {
-            repository.getAccountInfo()
-                .onSuccess { accountInfo ->
-                    _accountInfo.value = accountInfo
-                }
-                .onFailure {
-                    //依靠全局拦截器处理失败情况
-                }
-        }
+        session.fetchAccountInfo()
     }
 
     //注册
@@ -218,19 +184,14 @@ class MainViewModel(
                         .cancelAllWorkByTag("user_$userIdToCancel")
                 }
 
-                cookieJar.clear()//退出成功时清理本地cookie
-                _isLoggedIn.value = false
-                _accountInfo.value = null
+                session.clearSession()//退出成功时清理本地登录态与cookie
                 _authState.value = AuthState.Success(null)
             }
         }
     }
 
-    //获取当前userId
-    //退出时，accountInfo变为null，userId也会变为null
-    val currentUserId: StateFlow<Long?> = _accountInfo
-        .map { it?.userInfo?.id?.toLong() }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    //获取当前userId（由会话仓库派生）
+    val currentUserId: StateFlow<Long?> = session.currentUserId
 
     //首页/搜索页：全局搜索状态(哪些文章该显示“已收藏”)
     //flatMapLatest:账号切换时自动重新查询数据库
