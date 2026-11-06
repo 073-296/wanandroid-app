@@ -5,7 +5,7 @@ import com.study.wanandroid.common.ToastUtils
 import com.study.wanandroid.data.local.AppDatabase
 import com.study.wanandroid.data.remote.RetrofitClient
 
-class MyApplication: Application() {
+class WanAndroidApplication: Application() {
     override fun onCreate() {
         super.onCreate()
         RetrofitClient.init(this)
