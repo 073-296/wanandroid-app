@@ -84,10 +84,6 @@ class AuthViewModel(
             }
         }
     }
-
-    fun fetchAccountInfo() {
-        session.fetchAccountInfo()
-    }
 }
 
 //认证状态

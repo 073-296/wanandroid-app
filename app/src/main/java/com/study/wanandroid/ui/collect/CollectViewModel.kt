@@ -7,7 +7,6 @@ import com.study.wanandroid.common.ToastUtils
 import com.study.wanandroid.data.local.AppDatabase
 import com.study.wanandroid.data.local.entity.FavoriteArticleEntity
 import com.study.wanandroid.data.remote.RetrofitClient
-import com.study.wanandroid.data.repository.ApiRepository
 import com.study.wanandroid.data.repository.FavoriteRepository
 import com.study.wanandroid.data.repository.UserSessionRepository
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -18,10 +18,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val sharedPreferences = getSharedPreferences(getString(R.string.sp_record), MODE_PRIVATE)
-        val token = sharedPreferences.getString(getString(R.string.token).toString(), "")
-
-
         setContent {
             WanAndroidTheme {
                 Surface(
@@ -30,17 +26,10 @@ class MainActivity : ComponentActivity() {
                 ) {
                     MainNav()
                 }
-                //WanAndroidApp(token = token)
             }
         }
     }
 }
-
-//@Composable
-//fun WanAndroidApp(token: String?) {
-//    val context = LocalContext.current
-//    MainNav()
-//}
 
 @Preview(showBackground = true)
 @Composable
