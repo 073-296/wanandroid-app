@@ -19,6 +19,7 @@
 
 ### 搜索
 - 关键词搜索文章，分页加载与错误重试
+- 标题中命中的关键词高亮显示，便于快速扫读
 - 区分「未搜索」与「搜索无结果」两种空态，避免进入页面就出现无谓的加载动画
 - 返回时自动清空搜索状态，释放上一次搜索结果
 
@@ -97,6 +98,7 @@ app/src/main/java/com/study/wanandroid/
 ├── MainActivity.kt / WanAndroidApplication.kt   # 应用入口
 ├── common/                                      # 通用工具
 │   ├── CustomTab.kt                             # Custom Tabs 封装（含站内相对链接补全）
+│   ├── HtmlText.kt                              # 接口富文本标题 → 纯文本
 │   └── ToastUtils.kt
 ├── data/
 │   ├── local/                                   # 本地数据源
@@ -164,6 +166,10 @@ app/src/main/java/com/study/wanandroid/
 
 **Room 的 schema 目录名跟着数据库类的全限定名走。** 移动 `AppDatabase` 的包会导致 KSP 往新目录输出 schema，历史版本需要手动归位，否则迁移测试拿不到旧版本 JSON。
 
+**搜索接口的 `title` 是富文本。** `/article/query/{page}/json` 会把命中的关键词包成 `<em class='highlight'>关键词</em>` 返回，标题里的破折号等字符也是 `&mdash;` 这类 HTML 实体。原样塞给 `Text` 会把标签直接显示出来。处理分两层：数据层用 `HtmlCompat.fromHtml()` 剥标签、还原实体（`common/HtmlText.kt`）；UI 层不依赖服务端标记，由 `ArticleItem` 按关键词生成 `AnnotatedString` 染色。这样首页（接口本身没有标记）和搜索页表现一致，收藏表里存也始终是纯文本。
+
+**个别记录的 `title` 自带摘要尾巴。** 实测有文章的 `title` 是「真实标题 `&gt;` 摘要片段」拼起来的，而原文标题里并没有 `>`——服务端入库时把描述拼进了标题字段。19 条搜索结果里只出现 1 条，客户端无法判断标题在哪个字结束，因此不做截断，原样展示。
+
 ## 快速开始
 
 环境要求：
@@ -188,6 +194,7 @@ git clone git@github.com:073-296/wanandroid-app.git
 
 - 依赖第三方免费公开 API，可能存在限流、字段变更或偶发不可用
 - 部分服务端字段可能返回 `null`，已在 `Json` 配置中开启 `coerceInputValues` 兜底
+- 个别文章标题在服务端就带着「标题 `>` 摘要」的尾巴（接口返回的 `title` 字段本身如此），客户端无法可靠拆分，原样展示
 - `MainViewModel` 拆分后每个页面各自订阅收藏状态，属于有意的取舍（同一 Room 查询的多次订阅，页面不可见即停止）
 - 测试覆盖有限：项目以功能实践与架构验证为主，尚未补充完整的单元测试与 UI 测试
 - 项目状态：核心功能已完成，处于低频维护状态
