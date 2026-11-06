@@ -17,13 +17,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.study.wanandroid.ui.MainViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.study.wanandroid.R
+import com.study.wanandroid.ui.AuthViewModel
 import com.study.wanandroid.ui.collect.CollectScreen
+import com.study.wanandroid.ui.collect.CollectViewModel
 import com.study.wanandroid.ui.home.HomeScreen
+import com.study.wanandroid.ui.home.HomeViewModel
 import com.study.wanandroid.ui.login.LoginScreen
 import com.study.wanandroid.ui.mine.MineScreen
 import com.study.wanandroid.ui.search.SearchScreen
+import com.study.wanandroid.ui.search.SearchViewModel
 
 
 enum class WanAndroidRoute(@StringRes val title: Int) {
@@ -35,10 +39,14 @@ enum class WanAndroidRoute(@StringRes val title: Int) {
 }
 
 @Composable
-fun MainNav(
-    viewModel: MainViewModel
-) {
-    val isLoggedIn by viewModel.isLogged.collectAsState()
+fun MainNav() {
+    //在导航层统一创建各 ViewModel（此处作用域是 Activity，配置变更/页面切换时状态不丢）
+    val authViewModel: AuthViewModel = viewModel()
+    val homeViewModel: HomeViewModel = viewModel()
+    val searchViewModel: SearchViewModel = viewModel()
+    val collectViewModel: CollectViewModel = viewModel()
+
+    val isLoggedIn by authViewModel.isLogged.collectAsState()
 
     val navController: NavHostController = rememberNavController()
 
@@ -86,13 +94,13 @@ fun MainNav(
     ) {
         //登录注册
         composable(route = WanAndroidRoute.Login.name) {
-            LoginScreen(viewModel = viewModel)
+            LoginScreen(viewModel = authViewModel)
         }
 
         //主页
         composable(route = WanAndroidRoute.Home.name) {
             HomeScreen(
-                viewModel = viewModel,
+                viewModel = homeViewModel,
                 currentRoute = currentRoute,
                 bottomBarOnClick = navigateToBottomTab,
                 searchOnClick = {
@@ -104,7 +112,7 @@ fun MainNav(
         //收藏
         composable(route = WanAndroidRoute.Collect.name) {
             CollectScreen(
-                viewModel=viewModel,
+                viewModel = collectViewModel,
                 currentRoute = currentRoute,
                 bottomBarOnClick = navigateToBottomTab
             )
@@ -113,7 +121,7 @@ fun MainNav(
         //我的
         composable(route = WanAndroidRoute.Mine.name) {
             MineScreen(
-                viewModel = viewModel,
+                viewModel = authViewModel,
                 currentRoute = currentRoute,
                 bottomBarOnClick = navigateToBottomTab
             )
@@ -122,7 +130,7 @@ fun MainNav(
         //搜索
         composable(route = WanAndroidRoute.Search.name) {
             SearchScreen(
-                viewModel = viewModel,
+                viewModel = searchViewModel,
                 backToHomeScreen = {
                     navController.popBackStack()
                 }

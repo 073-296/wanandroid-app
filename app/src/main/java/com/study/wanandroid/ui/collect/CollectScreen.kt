@@ -60,7 +60,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.study.wanandroid.ui.component.ContentBottomBar
-import com.study.wanandroid.ui.MainViewModel
 import com.study.wanandroid.R
 import com.study.wanandroid.common.ToastUtils
 import com.study.wanandroid.common.customTab
@@ -71,7 +70,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CollectScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel,
+    viewModel: CollectViewModel,
     currentRoute: String?,
     bottomBarOnClick: (String) -> Unit
 ) {

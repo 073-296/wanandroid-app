@@ -19,6 +19,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,7 +29,6 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import com.study.wanandroid.ui.MainViewModel
 import com.study.wanandroid.R
 import com.study.wanandroid.data.remote.dto.ArticleDetail
 import com.study.wanandroid.ui.component.ArticleItem
@@ -36,7 +37,7 @@ import com.study.wanandroid.ui.component.ContentBottomBar
 
 @Composable
 fun HomeScreen(
-    viewModel: MainViewModel,
+    viewModel: HomeViewModel,
     currentRoute: String?,
     bottomBarOnClick: (route: String) -> Unit,
     searchOnClick: () -> Unit
@@ -90,9 +91,12 @@ private fun HomeScreenTopBar(
 }
 
 @Composable
-private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
+private fun HomeScreenContent(modifier: Modifier, viewModel: HomeViewModel) {
     val lazyPagingItems: LazyPagingItems<ArticleDetail> =
         viewModel.articles.collectAsLazyPagingItems()
+    val bannerState by viewModel.bannerState.collectAsState()
+    val favoriteIds by viewModel.favoriteIds.collectAsState()
+    val userId by viewModel.currentUserId.collectAsState()
     Box(
         modifier = modifier.fillMaxSize()
     ) {
@@ -109,7 +113,10 @@ private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
                         .height(180.dp)
                         .fillMaxWidth()
                 ) {
-                    Banner(viewModel)
+                    Banner(
+                        state = bannerState,
+                        onRetry = { viewModel.retryBanner() }
+                    )
                 }
             }
 
@@ -119,7 +126,14 @@ private fun HomeScreenContent(modifier: Modifier, viewModel: MainViewModel) {
                 key = lazyPagingItems.itemKey { it.id }
             ) { index ->
                 val article = lazyPagingItems[index]
-                article?.let { ArticleItem(articleDetail = it, viewModel = viewModel) }
+                article?.let {
+                    ArticleItem(
+                        articleDetail = it,
+                        isCollected = it.id.toLong() in favoriteIds,
+                        userId = userId ?: 0L,
+                        onToggleFavorite = { entity -> viewModel.toggleFavorite(entity) }
+                    )
+                }
             }
 
             //底部加载状态

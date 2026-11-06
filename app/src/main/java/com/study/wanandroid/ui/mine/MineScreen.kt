@@ -42,15 +42,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.study.wanandroid.ui.AuthViewModel
 import com.study.wanandroid.ui.component.ContentBottomBar
-import com.study.wanandroid.ui.MainViewModel
 import com.study.wanandroid.R
 import com.study.wanandroid.ui.theme.WanAndroidTheme
 
 @Composable
 fun MineScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel,
+    viewModel: AuthViewModel,
     currentRoute: String?,
     bottomBarOnClick: (String) -> Unit
 ) {
