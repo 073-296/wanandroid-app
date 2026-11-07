@@ -9,6 +9,19 @@
 | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/home.jpg" width="200"> | <img src="docs/screenshots/search.jpg" width="200"> | <img src="docs/screenshots/collect.jpg" width="200"> | <img src="docs/screenshots/mine.jpg" width="200"> |
 
+## 下载
+
+前往 [Releases](https://github.com/073-296/wanandroid-app/releases) 下载 `WanAndroid-v1.0.0.apk` 直接安装。
+
+| 项目 | 说明 |
+| --- | --- |
+| 版本 | 1.0.0（versionCode 1） |
+| 包名 | `com.study.wanandroid` |
+| 系统要求 | Android 7.0（API 24）及以上 |
+| 安装包大小 | 约 8.6 MB |
+
+APK 为个人证书签名的正式包，首次安装需在系统设置中允许「安装未知来源应用」。若手机上装过 debug 包，请先卸载再安装（签名不同无法覆盖）。
+
 ## 功能
 
 ### 首页
@@ -189,6 +202,17 @@ git clone git@github.com:073-296/wanandroid-app.git
 **国内网络提示**：`settings.gradle.kts` 中已预置阿里云 Maven 镜像（google / gradle-plugin / public），官方仓库作为兜底保留，通常无需额外配置代理。
 
 **登录提示**：收藏、个人信息等接口需要登录态，请使用玩 Android 账号登录（没有账号可在应用内注册）。
+
+**打包正式版**：签名信息从根目录的 `keystore.properties` 读取，该文件已被 `.gitignore` 忽略，需要自己创建：
+
+```properties
+storeFile=E:/path/to/your.jks
+storePassword=******
+keyAlias=******
+keyPassword=******
+```
+
+配置好后执行 `./gradlew assembleRelease`，产物位于 `app/build/outputs/apk/release/`。文件缺失时构建不会失败，只是 release 包不带签名（`debuggable=false` 的包无法安装），debug 构建完全不受影响。
 
 ## 已知问题
 
