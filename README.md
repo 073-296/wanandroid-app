@@ -11,7 +11,7 @@
 
 ## 下载
 
-前往 [Releases](https://github.com/073-296/wanandroid-app/releases) 下载 `WanAndroid-v1.0.0.apk` 直接安装。
+前往 [Releases](../../releases) 下载 `WanAndroid-v1.0.0.apk` 直接安装。
 
 | 项目 | 说明 |
 | --- | --- |
@@ -192,8 +192,10 @@ app/src/main/java/com/study/wanandroid/
 - Android SDK 35
 
 ```bash
-git clone git@github.com:073-296/wanandroid-app.git
+git clone https://github.com/<owner>/<repo>.git
 ```
+
+> `<owner>` 和 `<repo>` 可直接在仓库首页右上角绿色 **Code** 按钮里复制完整地址。
 
 1. 用 Android Studio 打开项目，等待 Gradle Sync 完成
 2. `local.properties` 由 Android Studio 自动生成（指向本机 SDK，不应提交到仓库）
