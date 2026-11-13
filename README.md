@@ -192,10 +192,8 @@ app/src/main/java/com/study/wanandroid/
 - Android SDK 35
 
 ```bash
-git clone https://github.com/<owner>/<repo>.git
+git clone git@github.com:tide-0x/wanandroid-kotlin.git
 ```
-
-> `<owner>` 和 `<repo>` 可直接在仓库首页右上角绿色 **Code** 按钮里复制完整地址。
 
 1. 用 Android Studio 打开项目，等待 Gradle Sync 完成
 2. `local.properties` 由 Android Studio 自动生成（指向本机 SDK，不应提交到仓库）
